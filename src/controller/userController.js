@@ -1,32 +1,42 @@
-const connect = require('../db/connect');
+const { json } = require("express");
+const connect = require("../db/connect");
+const bcrypt = require("bcrypt");
+const SALT_ROUNDS = 10;
 
 module.exports = class userController {
     static async createUser(req, res) {
-        const { cpf, email, password, name } = req.body
-        const query = `INSERT into user (cpf=?, email=?, password=?, name=?)`
-        const values = [cpf, email, password, name]
+        const { userCpf, userEmail, userPassword, userName } = req.body
+        const query = `INSERT INTO user (userCpf=?, userEmail=?, userPassword=?, userName=?)`
+        const values = [userCpf, userEmail, userPassword, userName]
 
-        if (!cpf || !email || !password || !name) {
+        if (!userCpf || !userEmail || !userPassword || !userName) {
             return res.status(400).json({ error: "All fields are required!" })
         }
-        if (isNaN(cpf) || cpf.length !== 11) {
+        if (isNaN(userCpf) || userCpf.length !== 11) {
             return res.status(400).json({ error: "Invalid CPF. Must contain 11 numeric characters." })
         }
-        if (!email.include('@')) {
+        if (!userEmail.include('@')) {
             return res.status(400).json({ error: "Invalid Email. Must contain @" })
         }
+
+        const hashedPassword = await bcrypt.hash(userPassword, SALT_ROUNDS);
 
         try {
             connect.query(query, values, (err) => {
                 if (err) {
-                    if (err === "ER_DUP_ENTRY") {
+                    console.log(err)
+                    if (err.code === "ER_DUP_ENTRY") {
                         return res.status(400).json({ error: "CPF or Email already registered." })
                     }
-                    return res.status(400).json({ error: "" })
+                    if (err.sqlMessage) {
+                        return res.status(400).json({ error: err.sqlMessage })
+                    }
+                    return res.status(500).json({ error: "Internal server error" })
                 }
             })
         } catch (error) {
-            
+            console.log(error)
+            return res.status(500).json({ error: "Internal server error" })
         }
     }
 }
