@@ -10,12 +10,3 @@ const pool = mysql.createPool({
 });
 
 module.exports = pool
-
-/*
-
-    Aprendizadps:
-O pool serve para nao travar o banco ou deixá=lo lento, no caso 
-de várias requisições, o pool (piscina) aguenta várias requisições 
-ao mesmo tempo (neste caso 10), assim deixando-o mais rápido e seguro
-
-*/

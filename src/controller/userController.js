@@ -39,4 +39,26 @@ module.exports = class userController {
             return res.status(500).json({ error: "Internal server error" })
         }
     }
+
+    static async readAllUser(req, res) {
+        const query = `SELECT * FROM user`
+        try {
+            connect.query(query, (err, results) => {
+                if (err) {
+                    console.log(err)
+                    if (err.sqlMessage) {
+                        return res.status(400).json({ error: err.sqlMessage })
+                    }
+                    return res.status(500).json({ error: "Internal server error" })
+                }
+                if (!results) {
+                    return res.status(404).json({ error: "No users found" })
+                }
+                return res.status(200).json({ message: "Users: ", users: results })
+            })
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ error: "Internal server error" })
+        }
+    } 
 }
