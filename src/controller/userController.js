@@ -1,4 +1,3 @@
-const { json } = require("express");
 const connect = require("../db/connect");
 const bcrypt = require("bcrypt");
 const SALT_ROUNDS = 10;
@@ -34,7 +33,7 @@ module.exports = class userController {
                     }
                     return res.status(500).json({ error: "Internal server error" })
                 }
-                return res.status(200).json({ message: "User created successfully" })
+                return res.status(201).json({ message: "User created successfully" })
             })
         } catch (error) {
             console.log(error)
@@ -42,7 +41,7 @@ module.exports = class userController {
         }
     }
 
-    static async readAllUser(req, res) {
+    static async readAllUsers(req, res) {
         const query = `SELECT user_cpf, user_email, user_name FROM user`
         try {
             connect.query(query, (err, results) => {
@@ -56,7 +55,7 @@ module.exports = class userController {
                 if (!results) {
                     return res.status(404).json({ error: "No users found" })
                 }
-                return res.status(200).json({ message: "Users: ", users: results })
+                return res.status(200).json({ data: results })
             })
         } catch (error) {
             console.log(error)
