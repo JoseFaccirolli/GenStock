@@ -6,7 +6,7 @@ const SALT_ROUNDS = 10;
 module.exports = class userController {
     static async createUser(req, res) {
         const { userCpf, userEmail, userPassword, userName } = req.body
-        const query = `INSERT INTO user (userCpf=?, userEmail=?, userPassword=?, userName=?)`
+        const query = `INSERT INTO user (user_cpf=?, user_email=?, user_password=?, user_name=?)`
         const values = [userCpf, userEmail, userPassword, userName]
 
         if (!userCpf || !userEmail || !userPassword || !userName) {
