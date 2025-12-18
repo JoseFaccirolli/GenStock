@@ -2,7 +2,7 @@ const connect = require("../db/connect");
 const bcrypt = require("bcrypt");
 const SALT_ROUNDS = 10;
 
-module.exports = class userController {
+module.exports = class UserController {
     static async createUser(req, res) {
         const { userCpf, userEmail, userPassword, userName } = req.body
 
@@ -24,7 +24,7 @@ module.exports = class userController {
         try {
             connect.query(query, values, (err) => {
                 if (err) {
-                    console.log(err)
+                    console.error(err)
                     if (err.code === "ER_DUP_ENTRY") {
                         return res.status(400).json({ error: "CPF or Email already registered." })
                     }
@@ -36,7 +36,7 @@ module.exports = class userController {
                 return res.status(201).json({ message: "User created successfully" })
             })
         } catch (error) {
-            console.log(error)
+            console.error(error)
             return res.status(500).json({ error: "Internal server error" })
         }
     }
@@ -46,7 +46,7 @@ module.exports = class userController {
         try {
             connect.query(query, (err, results) => {
                 if (err) {
-                    console.log(err)
+                    console.error(err)
                     if (err.sqlMessage) {
                         return res.status(400).json({ error: err.sqlMessage })
                     }
@@ -58,7 +58,7 @@ module.exports = class userController {
                 return res.status(200).json({ data: results })
             })
         } catch (error) {
-            console.log(error)
+            console.error(error)
             return res.status(500).json({ error: "Internal server error" })
         }
     } 
