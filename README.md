@@ -10,11 +10,11 @@ A aplicação simula um pequeno sistema de cadastro e login de usuários, com ge
 ---
 
 ## 🛠️ Tecnologias utilizadas
-- **Node.js**
-- **Express.js**
-- **MySQL**
-- **bcrypt** (para criptografia de senhas)
-- **dotenv** (para variáveis de ambiente)
+
+![Node [JS]](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
+![Dotenv](https://img.shields.io/badge/dotenv-ECD53F?style=for-the-badge&logo=dotenv&logoColor=black)
 
 ---
 
