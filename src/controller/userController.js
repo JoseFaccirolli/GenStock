@@ -7,13 +7,22 @@ module.exports = class UserController {
         const { userCpf, userEmail, userPassword, userName } = req.body
 
         if (!userCpf || !userEmail || !userPassword || !userName) {
-            return res.status(400).json({ error: "All fields are required!" })
+            return res.status(400).json({
+                error: true,
+                message: "All fields are required!"
+            })
         }
         if (isNaN(userCpf) || userCpf.length !== 11) {
-            return res.status(400).json({ error: "Invalid CPF. Must contain 11 numeric characters." })
+            return res.status(400).json({
+                error: true,
+                message: "Invalid CPF. Must contain 11 numeric characters."
+            })
         }
         if (!userEmail.includes('@')) {
-            return res.status(400).json({ error: "Invalid Email. Must contain @" })
+            return res.status(400).json({
+                error: true,
+                message: "Invalid Email. Must contain @"
+            })
         }
 
         const hashedPassword = await bcrypt.hash(userPassword, SALT_ROUNDS);
@@ -26,18 +35,27 @@ module.exports = class UserController {
                 if (err) {
                     console.error(err)
                     if (err.code === "ER_DUP_ENTRY") {
-                        return res.status(400).json({ error: "CPF or Email already registered." })
+                        return res.status(400).json({
+                            error: true,
+                            message: "CPF or Email already registered."
+                        })
                     }
-                    if (err.sqlMessage) {
-                        return res.status(400).json({ error: err.sqlMessage })
-                    }
-                    return res.status(500).json({ error: "Internal server error" })
+                    return res.status(500).json({
+                        error: true,
+                        message: "Internal server error"
+                    })
                 }
-                return res.status(201).json({ message: "User created successfully" })
+                return res.status(201).json({
+                    error: false,
+                    message: "User created successfully"
+                })
             })
         } catch (error) {
             console.error(error)
-            return res.status(500).json({ error: "Internal server error" })
+            return res.status(500).json({
+                error: true,
+                message: "Internal server error"
+            })
         }
     }
 
@@ -47,19 +65,23 @@ module.exports = class UserController {
             connect.query(query, (err, results) => {
                 if (err) {
                     console.error(err)
-                    if (err.sqlMessage) {
-                        return res.status(400).json({ error: err.sqlMessage })
-                    }
-                    return res.status(500).json({ error: "Internal server error" })
+                    return res.status(500).json({
+                        error: true,
+                        message: "Internal server error"
+                    })
                 }
-                if (!results) {
-                    return res.status(404).json({ error: "No users found" })
-                }
-                return res.status(200).json({ data: results })
+                return res.status(200).json({
+                    error: false,
+                    message: "Users fetched successfully",
+                    data: results
+                })
             })
         } catch (error) {
             console.error(error)
-            return res.status(500).json({ error: "Internal server error" })
+            return res.status(500).json({
+                error: true,
+                message: "Internal server error"
+            })
         }
     } 
 }
