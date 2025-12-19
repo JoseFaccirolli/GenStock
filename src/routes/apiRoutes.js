@@ -4,5 +4,6 @@ const userController = require("../controller/userController");
 // -------------------- USUARIO -------------------- //
 router.post("/user", userController.createUser);
 router.get("/user", userController.readAllUsers);
+router.patch("/user:userCpf", userController.updateUser);
 
 module.exports = router;
