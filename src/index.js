@@ -15,7 +15,7 @@ class AppController {
 
     routes(){
         const apiRoutes = require("./routes/apiRoutes");
-        this.express.use("/estoque", apiRoutes);
+        this.express.use("/stock", apiRoutes);
     }
 }
 
