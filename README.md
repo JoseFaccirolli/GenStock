@@ -1,4 +1,4 @@
-# 🧠 EstudandoAPI  
+# 🧠 GenStock
 > Projeto de estudo para revisar e praticar o desenvolvimento de uma API com **Node.js** e **Express**.
 
 ---
