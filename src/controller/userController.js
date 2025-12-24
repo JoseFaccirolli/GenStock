@@ -1,7 +1,10 @@
-const connect = require("../database/connect");
-const bcrypt = require("bcrypt");
-const SALT_ROUNDS = 10;
+// ---- temp ---- //
+//const connect = require("../database/connect");
+//const bcrypt = require("bcrypt");
+//const SALT_ROUNDS = 10;
+// ---- temp ---- //
 
+const UserService = require("../service/userService");
 module.exports = class UserController {
     static async createUser(req, res) {
         const { userCpf, userEmail, userPassword, userName } = req.body;
@@ -12,41 +15,17 @@ module.exports = class UserController {
                 message: "All fields are required!"
             });
         }
-        if (isNaN(userCpf) || userCpf.length !== 11) {
-            return res.status(400).json({
-                error: true,
-                message: "Invalid CPF. Must contain 11 numeric characters."
-            });
-        }
-        if (!userEmail.includes('@')) {
-            return res.status(400).json({
-                error: true,
-                message: "Invalid Email."
-            });
-        }
-
-        const hashedPassword = await bcrypt.hash(userPassword, SALT_ROUNDS);
-        const query = `INSERT INTO user (user_cpf, user_email, user_password, user_name)
-        VALUES (?, ?, ?, ?)`;
-        const values = [userCpf, userEmail, hashedPassword, userName];
-
+        
         try {
-            await connect.execute(query, values);
+            await UserService.createUser(userCpf, userEmail, userPassword, userName);
                 return res.status(201).json({
                     error: false,
                     message: "User created successfully"
                 });
         } catch (error) {
-            console.error(error);
-            if (error.code === "ER_DUP_ENTRY") {
-                return res.status(400).json({
-                    error: true,
-                    message: "CPF or Email already registered."
-                });
-            }
-            return res.status(500).json({
+            return res.status(error.status || 500).json({
                 error: true,
-                message: "Internal server error"
+                message: error.message || "Internal server error"
             });
         }
     }
