@@ -1,15 +1,15 @@
-# 🧠 GenStock
+# GenStock
 > Projeto de estudo para revisar e praticar o desenvolvimento de uma API com **Node.js** e **Express**.
 
 ---
 
-## 📋 Sobre o projeto
+## Sobre o projeto
 Este projeto tem como objetivo criar uma **API simples** que realiza operações **CRUD** (Create, Read, Update, Delete) para controle de usuários e componentes.  
 A aplicação simula um pequeno sistema de cadastro e login de usuários, com gerenciamento básico de estoque vinculado a cada um deles.
 
 ---
 
-## 🛠️ Tecnologias utilizadas
+## Tecnologias utilizadas
 
 ![Node [JS]](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
 ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
@@ -18,7 +18,7 @@ A aplicação simula um pequeno sistema de cadastro e login de usuários, com ge
 
 ---
 
-## 🚀 Como executar o projeto
+## Como executar o projeto
 
 ### 1️⃣ Clonar o repositório
 ```bash
@@ -51,5 +51,5 @@ Exemplo: http://localhost:5000
 
 ---
 
-## 📜 Documentação do projeto
+## Documentação do projeto
 [Notion - Documentação](https://www.notion.so/Documenta-o-EstudandoAPI-2cfdd60eaefc80d88f4bd0addd6b43e3?source=copy_link)
