@@ -62,20 +62,12 @@ module.exports = class UserController {
     static async readAllUsers(req, res) {
         const query = `SELECT user_cpf, user_email, user_name FROM user`;
         try {
-            connect.query(query, (err, results) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json({
-                        error: true,
-                        message: "Internal server error"
-                    });
-                }
+            const [users] = await connect.execute(query)
                 return res.status(200).json({
                     error: false,
                     message: "Users fetched successfully",
-                    data: results
+                    data: users
                 });
-            });
         } catch (error) {
             console.error(error);
             return res.status(500).json({
