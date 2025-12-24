@@ -116,33 +116,25 @@ module.exports = class UserController {
         const query = `UPDATE user SET ${updates.join(", ")} WHERE user_cpf = ?`;
 
         try {
-            connect.query(query, values, (err, results) => {
-                if (err) {
-                    console.error(err);
-                    if (err.code === "ER_DUP_ENTRY") {
-                        return res.status(400).json({
-                            error: true,
-                            message: "Email already registered"
-                        });
-                    }
-                    return res.status(500).json({
-                        error: true,
-                        message: "Internal server error"
-                    });
-                }
-                if (results.affectedRows === 0) {
-                    return res.status(404).json({
-                        error: true,
-                        message: "User not found"
-                    });
-                }
-                return res.status(200).json({
-                    error: false,
-                    message: "User updated successfully"
+            const [result] = await connect.execute(query, values);
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    error: true,
+                    message: "User not found"
                 });
+            }
+            return res.status(200).json({
+                error: false,
+                message: "User updated successfully"
             });
         } catch (error) {
             console.error(error);
+            if (error.code === "ER_DUP_ENTRY") {
+                return res.status(400).json({
+                    error: true,
+                    message: "Email already registered"
+                });
+            }
             return res.status(500).json({
                 error: true,
                 message: "Internal server error"
