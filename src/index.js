@@ -1,5 +1,5 @@
 const express = require("express");
-const testConnect = require("./db/testConnect");
+const testConnect = require("./database/testConnect");
 
 class AppController {
     constructor() {
