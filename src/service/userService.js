@@ -15,7 +15,7 @@ module.exports = class UserService {
 
         const query = `INSERT INTO user (user_cpf, user_email, user_password, user_name)
         VALUES (?, ?, ?, ?)`;
-        const values = [userCpf, userEmail, userPassword, userName];
+        const values = [userCpf, userEmail, hashedPassword, userName];
 
         try {
             const [result] = await connect.execute(query, values);
