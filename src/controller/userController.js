@@ -68,31 +68,23 @@ module.exports = class UserController {
     static async deleteUser(req,res) {
         const { userCpf } = req.params;
 
-        if (!userCpf || isNaN(userCpf) || userCpf.length !== 11) {
+        if (!userCpf) {
             return res.status(400).json({
                 error: true,
-                message: "Invalid Cpf. Must contain 11 numeric characters."
+                message: "CPF is required."
             });
         }
-        const query = `DELETE FROM user WHERE user_cpf = ?`;
 
         try {
-            const [result] = await connect.query(query, [userCpf]);
-            if (result.affectedRows === 0) {
-                return res.status(404).json({
-                    error: true,
-                    message: "User not found"
-                });
-            }
+            await UserService.deleteUser(userCpf);
             return res.status(200).json({
                 error: false,
                 message: "User deleted successfully"
             });
         } catch (error) {
-            console.error(error);
-            return res.status(500).json({
+            return res.status(error.status || 500).json({
                 error: true,
-                message: "Internal server error"
+                message: error.message || "Internal server error"
             });
         }
     }

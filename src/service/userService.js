@@ -8,7 +8,7 @@ module.exports = class UserService {
             throw {status: 400, message: "Invalid CPF. Must contain 11 numeric characters."}
         }
         if (!userEmail.includes("@")){
-            throw {status: 400, message: "Invalide Email."}
+            throw {status: 400, message: "Invalid Email."}
         }
 
         const hashedPassword = await bcrypt.hash(userPassword, SALT_ROUNDS);
@@ -75,14 +75,35 @@ module.exports = class UserService {
         try {
             const [result] = await connect.execute(query, values);
             if (result.affectedRows === 0) {
-                throw { status: 404, message: "User not found" }
+                throw { status: 404, message: "User not found." }
             } 
             return result;
         } catch (error) {
-            console.error(error);
             if (error.status) throw error;
-            if (error.code === "ER_DUP_ENTRY") throw { status: 400, message: "Email slready registered" }
-            throw { status: 400, message: "Internal Server Error" }
+            console.error(error);
+            if (error.code === "ER_DUP_ENTRY") {
+                throw { status: 400, message: "Email already registered." }
+            } 
+            throw { status: 500, message: "Internal Server Error." }
+        }
+    }
+    
+    static async deleteUser(userCpf) {
+        if ( isNaN(userCpf) || userCpf.length !== 11 ) {
+            throw { status: 400, message: "Invalid Cpf. Must contain 11 numeric characters." }
+        }
+        const query = `DELETE FROM user WHERE user_cpf = ?`;
+
+        try {
+            const [result] = await connect.execute(query, [userCpf]);
+            if (result.affectedRows === 0) {
+                throw { status: 404, message: "User not found." }
+            }
+            return result;
+        } catch (error) {
+            if (error.status) throw error;
+            console.error(error);
+            throw { status: 500, message: "Internal Server Error." }
         }
     }
 }
