@@ -25,7 +25,7 @@ module.exports = class UserService {
             if (error.code === "ER_DUP_ENTRY") {
                 throw {status: 400, message: "CPF or Email already registered."}
             }
-            throw {status: 500, message: "Internal Server Error"}
+            throw {status: 500, message: "Internal Server Error."}
         }
     }
     
@@ -37,7 +37,52 @@ module.exports = class UserService {
             return users;            
         } catch (error) {
             console.error(error);
-            throw {status: 500, message: "Internal Server Error"}
+            throw {status: 500, message: "Internal Server Error."}
+        }
+    }
+
+    static async updateUser(userCpf, { userEmail, userPassword, userName }) {
+        if (isNaN(userCpf) || userCpf.length !== 11) {
+            throw { status: 400, message: "Invalid CPF. Must contain 11 numeric characters." }
+        }
+
+        const updates = []
+        const values = []
+
+        if (userEmail) {
+            if (!userEmail.includes("@")) {
+                throw { status: 400, message: "Invalid Email." }
+            }
+            updates.push("user_email = ?");
+            values.push(userEmail);
+        }
+        if (userPassword) {
+            const hashedPassword = await bcrypt.hash(userPassword, SALT_ROUNDS);
+            updates.push("user_password = ?");
+            values.push(hashedPassword);
+        }
+        if (userName) {
+            updates.push("user_name = ?");
+            values.push(userName);
+        }
+        if (updates.length === 0) {
+            throw { status: 400, message: "No fields to update." }
+        }
+
+        values.push(userCpf);
+        const query = `UPDATE user SET ${updates.join(", ")} WHERE user_cpf = ?`;
+
+        try {
+            const [result] = await connect.execute(query, values);
+            if (result.affectedRows === 0) {
+                throw { status: 404, message: "User not found" }
+            } 
+            return result;
+        } catch (error) {
+            console.error(error);
+            if (error.status) throw error;
+            if (error.code === "ER_DUP_ENTRY") throw { status: 400, message: "Email slready registered" }
+            throw { status: 400, message: "Internal Server Error" }
         }
     }
 }

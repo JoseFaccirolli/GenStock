@@ -44,13 +44,6 @@ module.exports = class UserController {
         const { userCpf } = req.params;
         const { userEmail, userPassword, userName } = req.body;
 
-        if (!userCpf || isNaN(userCpf) || userCpf.length !== 11) {
-            return res.status(400).json({
-                error: true,
-                message: "Invalid CPF. Must contain 11 numeric characters."
-            });
-        }
-
         if (!userEmail && !userPassword && !userName) {
             return res.status(400).json({
                 error: true,
@@ -58,57 +51,16 @@ module.exports = class UserController {
             });
         }
 
-        const updates = []
-        const values = []
-
-        if (userEmail) {
-            if (!userEmail.includes("@")) {
-                return res.status(400).json({
-                    error: true,
-                    message: "Invalid Email."
-                });
-            }
-            updates.push("user_email = ?");
-            values.push(userEmail);
-        }
-
-        if (userPassword) {
-            const hashedPassword = await bcrypt.hash(userPassword, SALT_ROUNDS);
-            updates.push("user_password = ?");
-            values.push(hashedPassword);
-        }
-
-        if (userName) {
-            updates.push("user_name = ?");
-            values.push(userName);
-        }
-        
-        values.push(userCpf);
-        const query = `UPDATE user SET ${updates.join(", ")} WHERE user_cpf = ?`;
-
         try {
-            const [result] = await connect.execute(query, values);
-            if (result.affectedRows === 0) {
-                return res.status(404).json({
-                    error: true,
-                    message: "User not found"
-                });
-            }
+            await UserService.updateUser(userCpf, { userEmail, userPassword, userName });
             return res.status(200).json({
                 error: false,
                 message: "User updated successfully"
             });
         } catch (error) {
-            console.error(error);
-            if (error.code === "ER_DUP_ENTRY") {
-                return res.status(400).json({
-                    error: true,
-                    message: "Email already registered"
-                });
-            }
-            return res.status(500).json({
+            return res.status(error.status || 500).json({
                 error: true,
-                message: "Internal server error"
+                message: error.message || "Internal server error"
             });
         }
     }
