@@ -51,5 +51,9 @@ Exemplo: http://localhost:5000
 
 ---
 
+## Como testar o projeto
+### Postman
+Para visualizar os comandos de teste de cada rota, consulte a [Referência de cURLs](cURL.md).
+
 ## Documentação do projeto
 [Notion - Documentação](https://www.notion.so/Documenta-o-EstudandoAPI-2cfdd60eaefc80d88f4bd0addd6b43e3?source=copy_link)
