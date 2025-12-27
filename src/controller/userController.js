@@ -6,7 +6,7 @@ module.exports = class UserController {
         if (!userCpf || !userEmail || !userPassword || !userName) {
             return res.status(400).json({
                 error: true,
-                message: "All fields are required!"
+                message: "All fields are required."
             });
         }
         
@@ -14,12 +14,12 @@ module.exports = class UserController {
             await UserService.createUser(userCpf, userEmail, userPassword, userName);
                 return res.status(201).json({
                     error: false,
-                    message: "User created successfully"
+                    message: "User created successfully."
                 });
         } catch (error) {
             return res.status(error.status || 500).json({
                 error: true,
-                message: error.message || "Internal server error"
+                message: error.message || "Internal server error."
             });
         }
     }
@@ -29,13 +29,13 @@ module.exports = class UserController {
             const users = await UserService.readAllUsers();
                 return res.status(200).json({
                     error: false,
-                    message: "Users fetched successfully",
+                    message: "Users fetched successfully.",
                     data: users
                 });
         } catch (error) {
             return res.status(error.status || 500).json({
                 error: true,
-                message: error.message || "Internal server error"
+                message: error.message || "Internal server error."
             });
         }
     }
@@ -55,12 +55,12 @@ module.exports = class UserController {
             await UserService.updateUser(userCpf, { userEmail, userPassword, userName });
             return res.status(200).json({
                 error: false,
-                message: "User updated successfully"
+                message: "User updated successfully."
             });
         } catch (error) {
             return res.status(error.status || 500).json({
                 error: true,
-                message: error.message || "Internal server error"
+                message: error.message || "Internal server error."
             });
         }
     }
@@ -79,12 +79,37 @@ module.exports = class UserController {
             await UserService.deleteUser(userCpf);
             return res.status(200).json({
                 error: false,
-                message: "User deleted successfully"
+                message: "User deleted successfully."
             });
         } catch (error) {
             return res.status(error.status || 500).json({
                 error: true,
-                message: error.message || "Internal server error"
+                message: error.message || "Internal server error."
+            });
+        }
+    }
+
+    static async loginUser(req, res) {
+        const { userEmail, userPassword } = req.body;
+
+        if (!userEmail || !userPassword) {
+            return res.status(400).json({
+                error: true,
+                message: "All fields are required."
+            });
+        }
+
+        try {
+            const user = await UserService.loginUser(userEmail, userPassword);
+            return res.status(200).json({
+                error: false,
+                message: "User successfully logged in.",
+                user: user
+            });
+        } catch (error) {
+            return res.status(error.status || 500).json({
+                error: true,
+                message: error.message || "Internal Server Error."
             });
         }
     }

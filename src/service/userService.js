@@ -106,4 +106,30 @@ module.exports = class UserService {
             throw { status: 500, message: "Internal Server Error." }
         }
     }
+
+    static async loginUser(userEmail, userPassword) {
+        const query = `SELECT user_cpf, user_email, user_name, user_password FROM user WHERE user_email = ?`;
+
+        try {
+            const [result] = await connect.execute(query, [userEmail]);
+            if (result.length === 0) {
+                throw { status: 401, message: "Invalid email or password." }
+            }
+
+            const user = result[0];
+            const correctPassword = await bcrypt.compare(userPassword, user.user_password);
+
+            if (!correctPassword) {
+                throw { status: 401, message: "Invalid email or password." }
+            }
+
+            delete user.user_password;
+
+            return user;
+        } catch (error) {
+            if (error.status) throw error;
+            console.error(error);
+            throw { status: 500, message: "Internal Server Error" }
+        }
+    }
 }
