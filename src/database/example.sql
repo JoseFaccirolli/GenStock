@@ -10,7 +10,7 @@ create table user (
 
 create table component (
     component_id int auto_increment primary key,
-    component_name varchar(200) not null,
+    component_name varchar(200) not null unique,
     quantity int not null,
     description varchar(255),
     fk_user_cpf char(11) not null,
@@ -20,7 +20,10 @@ create table component (
 create table stock_log (
     log_id int auto_increment primary key,
     log_status enum("in", "out") not null,
+    quantity_changed int not null,
     data_log datetime default current_timestamp,
-    fk_component_id int,
-    foreign key(fk_component_id) references component(component_id)
+    fk_component_id int not null,
+    fk_user_cpf char(11) not null,
+    foreign key(fk_component_id) references component(component_id),
+    foreign key(fk_user_cpf) references user(user_cpf)
 );
