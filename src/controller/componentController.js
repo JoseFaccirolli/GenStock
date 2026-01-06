@@ -40,4 +40,29 @@ module.exports = class ComponentController {
             });
         }
     }
+
+    static async updateComponent(req, res) {
+        const { componentId } = req.params
+        const { componentName, description } = req.body;
+
+        if (!componentName && !description) {
+            return res.status(400).json({
+                error: true,
+                message: "No fields provided for update."
+            });
+        }
+
+        try {
+            await ComponentService.updateComponent(componentName, description, componentId);
+            return res.status(200).json({
+                error: false,
+                message: "Component updated successfully."
+            });
+        } catch (error) {
+            return res.status(error.status || 500).json({
+                error: true,
+                message: error.message || "Internal Server Error"
+            });
+        }
+    }
 }
