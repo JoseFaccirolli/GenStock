@@ -11,5 +11,6 @@ router.post("/user/login", userController.loginUser);
 
 // -------------------- COMPONENTS -------------------- //
 router.post("/component", ComponentController.createComponent);
+router.get("/component", ComponentController.readAllComponents);
 
 module.exports = router;

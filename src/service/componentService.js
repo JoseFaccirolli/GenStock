@@ -22,4 +22,25 @@ module.exports = class ComponentService {
         }
 
     }
+
+    static async readAllComponents() {
+        const query = `
+        SELECT
+            c.component_id, 
+            c.component_name, 
+            c.quantity, 
+            c.description, 
+            u.user_name 
+        FROM component c 
+        JOIN user u ON c.fk_user_cpf = u.user_cpf
+        `;
+
+        try {
+            const [components] = await connect.execute(query);
+            return components;
+        } catch (error) {
+            if (error.status) throw error;
+            throw { status: 500, message: "Internal Server Error." }
+        }
+    }
 }
