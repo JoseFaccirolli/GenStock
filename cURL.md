@@ -9,12 +9,12 @@ Endpoints para o gerenciamento de usuários.
 ### 1. Criar Usuário (`createUser`)
 Cadastra um novo usuário no sistema.
 ```http
-POST /stock/user
+POST /user
 ```
 
 cURL
 ```sh
-curl --location 'http://localhost:5000/stock/user' \
+curl --location 'http://localhost:5000/user' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "userCpf": "12345678901",
@@ -27,23 +27,23 @@ curl --location 'http://localhost:5000/stock/user' \
 ### 2. Listar Usuários (`readAllUsers`)
 Retorna uma lista de todos os usuários cadastrados.
 ```http
-GET /stock/user
+GET /user
 ```
 
 cURL
 ```sh
-curl --location 'http://localhost:5000/stock/user'
+curl --location 'http://localhost:5000/user'
 ```
 
 ### 3. Atualizar Usuário (`updateUser`)
 Atualiza dados parciais de um usuário específico via CPF.
 ```http
-PATCH /stock/user/:userCpf
+PATCH /user/:userCpf
 ```
 
 cURL
 ```sh
-curl --location --request PATCH 'http://localhost:5000/stock/user/12345678901' \
+curl --location --request PATCH 'http://localhost:5000/user/12345678901' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "userEmail": "test.updated@teste.chage.com"
@@ -53,10 +53,10 @@ curl --location --request PATCH 'http://localhost:5000/stock/user/12345678901' \
 ### 4. Deletar Usuário (`deleteUser`)
 Remove um usuário do sistema permanentemente.
 ```http
-DELETE /stock/user/:userCpf
+DELETE /user/:userCpf
 ```
 
 cURL
 ```sh
-curl --location --request DELETE 'http://localhost:5000/stock/user/12345678901'
+curl --location --request DELETE 'http://localhost:5000/user/12345678901'
 ```
