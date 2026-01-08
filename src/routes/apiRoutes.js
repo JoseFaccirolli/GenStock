@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const ComponentController = require("../controller/componentController");
+const StockController = require("../controller/stockController");
 const userController = require("../controller/userController");
 
 // -------------------- USUARIO -------------------- //
@@ -14,5 +15,10 @@ router.post("/component", ComponentController.createComponent);
 router.get("/component", ComponentController.readAllComponents);
 router.patch("/component/:componentId", ComponentController.updateComponent);
 router.delete("/component/:componentId", ComponentController.deleteComponent);
+
+// -------------------- STOCK -------------------- //
+router.patch("/stock/entry", StockController.entry);
+router.patch("/stock/exit", StockController.exit);
+
 
 module.exports = router;
