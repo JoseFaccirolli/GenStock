@@ -137,3 +137,42 @@ cURL
 ```sh
 curl --location --request DELETE 'http://localhost:5000/component/1
 ```
+
+---
+
+# *Estoque*
+Endpoints para o gerenciamento da entrada e saída de componentes do estoque.
+
+### 1. Entrada de Componente (`entry`)
+Atualiza a quantidade no estoque e faz Log da movimentação
+```http
+PATCH /stock/entry
+```
+
+cURL
+```sh
+curl --location --request PATCH 'http://localhost:5000/stock/entry' \
+--header 'Content-Type: application/json' \
+--data '{
+    "componentId": 1,
+    "quantity": "50",
+    "userCpf": "12345678901"
+}'
+```
+
+### 2. Saída de Componente (`exit`)
+Atualiza a quantidade no estoque e faz Log da movimentação
+```http
+PATCH /stock/exit
+```
+
+cURL
+```sh
+curl --location --request PATCH 'http://localhost:5000/stock/exit' \
+--header 'Content-Type: application/json' \
+--data '{
+    "componentId": 1,
+    "quantity": "50",
+    "userCpf": "12345678901"
+}'
+```
