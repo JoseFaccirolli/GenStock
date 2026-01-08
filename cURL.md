@@ -19,7 +19,7 @@ curl --location 'http://localhost:5000/user' \
 --data-raw '{
     "userCpf": "12345678901",
     "userEmail": "test.mail@test.com",
-    "userPassword": "sTrpassword123",
+    "userPassword": "password123",
     "userName": "Tester of Api"
 }'
 ```
@@ -59,4 +59,81 @@ DELETE /user/:userCpf
 cURL
 ```sh
 curl --location --request DELETE 'http://localhost:5000/user/12345678901'
+```
+
+### 5. Autenticar Usuário (`loginUser`)
+```http
+POST /user/login
+```
+
+cURL
+```sh
+curl --location 'http://localhost:5000/user/login' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "userEmail": "test.mail@test.com",
+    "userPassword": "password123" 
+}'
+```
+
+---
+
+## *Componentes*
+Endpoints para o gerenciamento de componentes do estoque.
+
+### 1. Criar Componente (`createComponent`)
+Cadastra um novo componente no estoque.
+```http
+POST /component
+```
+
+cURL
+```sh
+curl --location 'http://localhost:5000/component' \
+--header 'Content-Type: application/json' \
+--data '{
+    "componentName": "Hammer",
+    "quantity": 50,
+    "description": "Tool used to hammering",
+    "fkUserCpf": "12345678901"
+}'
+```
+
+### 2. Listar Componentes (`readAllComponents`)
+Retorna uma lista de todos os componentes do estoque.
+```http
+GET /component
+```
+
+cURL
+```sh
+curl --location 'http://localhost:5000/component'
+```
+
+### 3. Atualizar Componente (`updateComponent`)
+Atualiza dados parciais de um Component específico via ID.
+_OBS: Só é possivível atualizar nome e descrição_
+```http
+PATCH /component/:componentId
+```
+
+cURL
+```sh
+curl --location --request PATCH 'http://localhost:5000/component/1' \
+--header 'Content-Type: application/json' \
+--data '{
+    "componentName": "Name Changed",
+    "description": "Description Changed"
+}'
+```
+
+### 4. Deletar Componente (`deleteComponent`)
+Remove um componente do sistema permanentemente.
+```http
+DELETE /component/:componentId
+```
+
+cURL
+```sh
+curl --location --request DELETE 'http://localhost:5000/component/1
 ```
