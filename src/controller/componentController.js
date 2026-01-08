@@ -11,6 +11,13 @@ module.exports = class ComponentController {
             });
         }
 
+        if (isNaN(quantity) || quantity <= 0) {
+            return res.status(400).json({
+                error: true,
+                message: "Quantity must be numeric and positive."
+            });
+        }
+
         try {
             await ComponentService.createComponent(componentName, quantity, description, fkUserCpf);
             return res.status(201).json({

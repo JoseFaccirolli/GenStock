@@ -11,10 +11,10 @@ module.exports = class StockController {
             });
         }
 
-        if (quantity <= 0) {
+        if (isNaN(quantity) || quantity <= 0) {
             return res.status(400).json({
                 error: true,
-                message: "Quantity must be positive."
+                message: "Quantity must be numeric and positive."
             });
         }
 
