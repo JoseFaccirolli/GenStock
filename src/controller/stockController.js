@@ -60,4 +60,24 @@ module.exports = class StockController {
             });
         }
     }
+
+    static async readAllLogs(req, res) {
+        try {
+            const log = await StockService.readAllLogs();
+            return res.status(200).json({
+                error: false,
+                message: "Logs fetched successfully.",
+                log: log
+            });
+        } catch (error) {
+            return res.status(error.status || 500).json({
+                error: true,
+                message: error.message || 500
+            });
+        }
+    }
+
+    static async readLogById(req, res) {
+
+    }
 }
