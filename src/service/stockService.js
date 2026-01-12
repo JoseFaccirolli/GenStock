@@ -92,13 +92,30 @@ module.exports = class StockService {
             return log;        
         } catch (error) {
             if (error.status) throw error;
-            console.log(error)
-            throw { status: 500, message: "Internal Server Error" }
+            throw { status: 500, message: "Internal Server Error." }
         }
     }
 
     static async readLogById(componentId) {
-        
+        const query = `SELECT
+        sl.log_id,
+        sl.log_status,
+        sl.quantity_changed,
+        sl.data_log,
+        c.component_name,
+        u.user_name
+        FROM stock_log sl
+        JOIN component c ON sl.fk_component_id = c.component_id
+        JOIN user u ON sl.fk_user_cpf = u.user_cpf
+        WHERE sl.fk_component_id = ?`;
+
+        try {
+            const [log] = await connect.execute(query, [componentId]);
+            return log;
+        } catch (error) {
+            if (error.status) throw error;
+            throw { status: 500, message: "Iternal Server Error." }
+        }
     }
 
 }

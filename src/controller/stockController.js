@@ -72,12 +72,25 @@ module.exports = class StockController {
         } catch (error) {
             return res.status(error.status || 500).json({
                 error: true,
-                message: error.message || 500
+                message: error.message || "Internal Server Error."
             });
         }
     }
 
     static async readLogById(req, res) {
-
+        const { componentId } = req.params;
+        try {
+            const log = await StockService.readLogById(componentId);
+            return res.status(200).json({
+                error: true,
+                message: "Logs fetched successfully.",
+                log: log
+            }); 
+        } catch (error) {
+            return res.status(error.status || 500).json({
+                error: true,
+                message: error.message || "Internal Server Error."
+            });
+        }
     }
 }
