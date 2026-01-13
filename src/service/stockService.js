@@ -75,7 +75,7 @@ module.exports = class StockService {
         }
     }
 
-    static async readAllLogs() {
+    static async readAllLogs(userCpf) {
         const query = `SELECT 
         sl.log_id,
         sl.log_status,
@@ -85,10 +85,11 @@ module.exports = class StockService {
         u.user_name
         FROM stock_log sl
         JOIN component c ON sl.fk_component_id = c.component_id
-        JOIN user u ON sl.fk_user_cpf = u.user_cpf`;
+        JOIN user u ON sl.fk_user_cpf = u.user_cpf
+        WHERE sl.fk_user_cpf = ?`;
 
         try {
-            const [log] = await connect.execute(query);
+            const [log] = await connect.execute(query, [userCpf]);
             return log;        
         } catch (error) {
             if (error.status) throw error;
@@ -96,7 +97,7 @@ module.exports = class StockService {
         }
     }
 
-    static async readLogById(componentId) {
+    static async readLogById(componentId, userCpf) {
         const query = `SELECT
         sl.log_id,
         sl.log_status,
@@ -107,10 +108,13 @@ module.exports = class StockService {
         FROM stock_log sl
         JOIN component c ON sl.fk_component_id = c.component_id
         JOIN user u ON sl.fk_user_cpf = u.user_cpf
-        WHERE sl.fk_component_id = ?`;
+        WHERE sl.fk_component_id = ?
+        AND sl.fk_user_cpf = ?`;
+
+        const values = [componentId, userCpf];
 
         try {
-            const [log] = await connect.execute(query, [componentId]);
+            const [log] = await connect.execute(query, values);
             return log;
         } catch (error) {
             if (error.status) throw error;
