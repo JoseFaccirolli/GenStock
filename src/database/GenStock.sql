@@ -14,7 +14,7 @@ create table component (
     quantity int not null,
     description varchar(255),
     fk_user_cpf char(11) not null,
-    foreign key(fk_user_cpf) references user(user_cpf)
+    foreign key(fk_user_cpf) references user(user_cpf),
     unique(component_name, fk_user_cpf) -- Constraint composta, unicidade por usuário
 );
 
