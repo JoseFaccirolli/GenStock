@@ -100,7 +100,7 @@ module.exports = class StockController {
         try {
             const log = await StockService.readLogById(componentId, userCpf);
             return res.status(200).json({
-                error: true,
+                error: false,
                 message: "Logs fetched successfully.",
                 log: log
             }); 
