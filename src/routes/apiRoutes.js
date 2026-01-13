@@ -14,7 +14,7 @@ router.post("/user/login", UserController.loginUser);
 router.post("/component", ComponentController.createComponent);
 router.get("/component", ComponentController.readAllComponents);
 router.patch("/component/:componentId", ComponentController.updateComponent);
-router.delete("/component/:componentId", ComponentController.deleteComponent);
+router.patch("/component/deactivate/:componentId", ComponentController.deleteComponent); // soft delete
 
 // -------------------- STOCK & LOG -------------------- //
 router.patch("/stock/entry", StockController.entry);

@@ -81,7 +81,7 @@ module.exports = class ComponentService {
     }
 
     static async deleteComponent(componentId, userCpf) {
-        const query = `DELETE FROM component WHERE component_id = ? AND fk_user_cpf = ?`;
+        const query = `UPDATE component SET is_active = 0 WHERE component_id = ? AND fk_user_cpf = ?`;
         const values = [componentId, userCpf];
 
         try {
