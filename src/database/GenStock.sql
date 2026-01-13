@@ -14,8 +14,8 @@ create table component (
     quantity int not null,
     description varchar(255),
     fk_user_cpf char(11) not null,
-    foreign key(fk_user_cpf) references user(user_cpf),
-    unique(component_name, fk_user_cpf) -- Constraint composta, unicidade por usuário
+    foreign key(fk_user_cpf) references user(user_cpf) on delete cascade,
+    unique(component_name, fk_user_cpf)
 );
 
 create table stock_log (
@@ -25,6 +25,6 @@ create table stock_log (
     data_log datetime default current_timestamp,
     fk_component_id int not null,
     fk_user_cpf char(11) not null,
-    foreign key(fk_component_id) references component(component_id),
+    foreign key(fk_component_id) references component(component_id) on delete cascade,
     foreign key(fk_user_cpf) references user(user_cpf)
 );

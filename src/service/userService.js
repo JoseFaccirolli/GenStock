@@ -98,6 +98,7 @@ module.exports = class UserService {
             }
             return result;
         } catch (error) {
+            console.log(error)
             if (error.status) throw error;
             throw { status: 500, message: "Internal Server Error." }
         }
