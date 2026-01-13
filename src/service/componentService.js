@@ -1,10 +1,10 @@
 const connect = require("../database/connect");
 
 module.exports = class ComponentService {
-    static async createComponent(componentName, quantity, description, fkUserCpf) {
+    static async createComponent(componentName, quantity, description, userCpf) {
         const query = `INSERT INTO component (component_name, quantity, description, fk_user_cpf)
         VALUES (?, ?, ?, ?)`;
-        const values = [componentName, quantity, description, fkUserCpf];
+        const values = [componentName, quantity, description, userCpf];
 
         try {
             const [result] = await connect.execute(query, values);
@@ -22,7 +22,7 @@ module.exports = class ComponentService {
         }
     }
 
-    static async readAllComponents() {
+    static async readAllComponents(userCpf) {
         const query = `
         SELECT
             c.component_id, 
@@ -32,10 +32,11 @@ module.exports = class ComponentService {
             u.user_name as userName
         FROM component c 
         JOIN user u ON c.fk_user_cpf = u.user_cpf
+        WHERE c.fk_user_cpf = ?
         `;
 
         try {
-            const [components] = await connect.execute(query);
+            const [components] = await connect.execute(query, [userCpf]);
             return components;
         } catch (error) {
             if (error.status) throw error;
@@ -43,7 +44,7 @@ module.exports = class ComponentService {
         }
     }
 
-    static async updateComponent(componentName, description, componentId) {
+    static async updateComponent(componentName, description, componentId, userCpf) {
         if (description && description.length > 255) {
             throw { status: 413, message: "Description is too long." }
         }
@@ -62,7 +63,8 @@ module.exports = class ComponentService {
         }
 
         values.push(componentId);
-        const query = `UPDATE component SET ${updates.join(", ")} WHERE component_id = ?`
+        values.push(userCpf);
+        const query = `UPDATE component SET ${updates.join(", ")} WHERE component_id = ? AND fk_user_cpf = ?`;
 
         try {
             const [result] = await connect.execute(query, values);
@@ -79,11 +81,12 @@ module.exports = class ComponentService {
         }
     }
 
-    static async deleteComponent(componentId) {
-        const query = `DELETE FROM component WHERE component_id = ?`;
+    static async deleteComponent(componentId, userCpf) {
+        const query = `DELETE FROM component WHERE component_id = ? AND fk_user_cpf = ?`;
+        const values = [componentId, userCpf];
 
         try {
-            const [result] = await connect.execute(query, [componentId])
+            const [result] = await connect.execute(query, values)
             if (result.affectedRows === 0) {
                 throw { status: 404, message: "Component not found." }
             }

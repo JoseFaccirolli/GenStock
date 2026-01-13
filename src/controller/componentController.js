@@ -2,15 +2,15 @@ const ComponentService = require("../service/componentService");
 
 module.exports = class ComponentController {
     static async createComponent(req, res) {
-        const { componentName, quantity, description, fkUserCpf } = req.body;
+        const { componentName, quantity, description, userCpf } = req.body;
 
-        if (!componentName || quantity === undefined || !fkUserCpf) {
+        if (!componentName || quantity === undefined || !userCpf) {
             return res.status(400).json({
                 error: true,
                 message: "Missing required fields."
             });
         }
-        if (isNaN(quantity) || quantity <= 0) {
+        if (isNaN(quantity) || quantity < 0) {
             return res.status(400).json({
                 error: true,
                 message: "Quantity must be numeric and positive."
@@ -18,7 +18,7 @@ module.exports = class ComponentController {
         }
 
         try {
-            await ComponentService.createComponent(componentName, quantity, description, fkUserCpf);
+            await ComponentService.createComponent(componentName, quantity, description, userCpf);
             return res.status(201).json({
                 error: false,
                 message: "Component successfully created."
@@ -32,8 +32,17 @@ module.exports = class ComponentController {
     }
 
     static async readAllComponents(req, res) {
+        const { userCpf } = req.body;
+
+        if (!userCpf) {
+            return res.status(400).json({
+                error: true,
+                message: "User CPF is required."
+            });
+        }
+
         try {
-            const components = await ComponentService.readAllComponents();
+            const components = await ComponentService.readAllComponents(userCpf);
             return res.status(200).json({
                 error: false,
                 message: "Components fetched successfully.",
@@ -49,7 +58,7 @@ module.exports = class ComponentController {
 
     static async updateComponent(req, res) {
         const { componentId } = req.params
-        const { componentName, description } = req.body;
+        const { componentName, description, userCpf } = req.body;
 
         if (!componentName && description === undefined) {
             return res.status(400).json({
@@ -58,8 +67,15 @@ module.exports = class ComponentController {
             });
         }
 
+        if (!userCpf) {
+            return res.status(400).json({
+                error: true,
+                message: "User CPF is required."
+            });
+        }
+
         try {
-            await ComponentService.updateComponent(componentName, description, componentId);
+            await ComponentService.updateComponent(componentName, description, componentId, userCpf);
             return res.status(200).json({
                 error: false,
                 message: "Component updated successfully."
@@ -74,6 +90,7 @@ module.exports = class ComponentController {
 
     static async deleteComponent(req, res) {
         const { componentId } = req.params;
+        const { userCpf } = req.body;
 
         if (!componentId || isNaN(componentId)) {
             return res.status(400).json({
@@ -82,8 +99,15 @@ module.exports = class ComponentController {
             });
         }
 
+        if (!userCpf) {
+            return res.status(400).json({
+                error: true,
+                message: "User CPF is required"
+            });
+        }
+
         try {
-            await ComponentService.deleteComponent(componentId);
+            await ComponentService.deleteComponent(componentId, userCpf);
             return res.status(200).json({
                 error: false,
                 message: "Component deleted successfully"

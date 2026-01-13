@@ -10,11 +10,12 @@ create table user (
 
 create table component (
     component_id int auto_increment primary key,
-    component_name varchar(200) not null unique,
+    component_name varchar(200) not null,
     quantity int not null,
     description varchar(255),
     fk_user_cpf char(11) not null,
     foreign key(fk_user_cpf) references user(user_cpf)
+    UNIQUE(component_name, fk_user_cpf) -- Constraint composta, unicidade por usuário
 );
 
 create table stock_log (
