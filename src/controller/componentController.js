@@ -10,7 +10,7 @@ module.exports = class ComponentController {
                 message: "Missing required fields."
             });
         }
-        if (isNaN(quantity) || quantity <= 0) {
+        if (isNaN(quantity) || quantity < 0) {
             return res.status(400).json({
                 error: true,
                 message: "Quantity must be numeric and positive."
