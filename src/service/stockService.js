@@ -123,8 +123,7 @@ module.exports = class StockService {
             return log;
         } catch (error) {
             if (error.status) throw error;
-            throw { status: 500, message: "Iternal Server Error." }
+            throw { status: 500, message: "Internal Server Error." }
         }
     }
-
 }

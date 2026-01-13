@@ -1,14 +1,14 @@
 const router = require("express").Router();
 const ComponentController = require("../controller/componentController");
 const StockController = require("../controller/stockController");
-const userController = require("../controller/userController");
+const UserController = require("../controller/userController");
 
 // -------------------- USUARIO -------------------- //
-router.post("/user", userController.createUser);
-router.get("/user", userController.readAllUsers);
-router.patch("/user/:userCpf", userController.updateUser);
-router.delete("/user/:userCpf", userController.deleteUser);
-router.post("/user/login", userController.loginUser);
+router.post("/user", UserController.createUser);
+router.get("/user", UserController.readAllUsers);
+router.patch("/user/:userCpf", UserController.updateUser);
+router.delete("/user/:userCpf", UserController.deleteUser);
+router.post("/user/login", UserController.loginUser);
 
 // -------------------- COMPONENTS -------------------- //
 router.post("/component", ComponentController.createComponent);
