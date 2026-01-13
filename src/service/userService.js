@@ -21,7 +21,6 @@ module.exports = class UserService {
             const [result] = await connect.execute(query, values);
             return result;
         } catch (error) {
-            console.error(error)
             if (error.code === "ER_DUP_ENTRY") {
                 throw {status: 409, message: "CPF or Email already registered."}
             }
@@ -36,7 +35,6 @@ module.exports = class UserService {
             const [users] = await connect.execute(query);
             return users;            
         } catch (error) {
-            console.error(error);
             throw {status: 500, message: "Internal Server Error."}
         }
     }
@@ -80,7 +78,6 @@ module.exports = class UserService {
             return result;
         } catch (error) {
             if (error.status) throw error;
-            console.error(error);
             if (error.code === "ER_DUP_ENTRY") {
                 throw { status: 409, message: "Email already registered." }
             } 
@@ -102,7 +99,6 @@ module.exports = class UserService {
             return result;
         } catch (error) {
             if (error.status) throw error;
-            console.error(error);
             throw { status: 500, message: "Internal Server Error." }
         }
     }
@@ -128,7 +124,6 @@ module.exports = class UserService {
             return user;
         } catch (error) {
             if (error.status) throw error;
-            console.error(error);
             throw { status: 500, message: "Internal Server Error" }
         }
     }

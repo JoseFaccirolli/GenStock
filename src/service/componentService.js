@@ -11,7 +11,6 @@ module.exports = class ComponentService {
             return result;
         } catch (error) {
             if (error.status) throw error;
-            console.error(error);
             if (error.code === "ER_NO_REFERENCED_ROW_2" || error.code === "ER_NO_REFERENCED_ROW_1") {
                 throw { status: 404, message: "User not found. Component cannot be created." }
             }
