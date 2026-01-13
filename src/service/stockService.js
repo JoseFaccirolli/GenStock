@@ -89,7 +89,8 @@ module.exports = class StockService {
         FROM stock_log sl
         JOIN component c ON sl.fk_component_id = c.component_id
         JOIN user u ON sl.fk_user_cpf = u.user_cpf
-        WHERE sl.fk_user_cpf = ?`;
+        WHERE sl.fk_user_cpf = ?
+        ODER BY sl.data_log DESC`;
 
         try {
             const [log] = await connect.execute(query, [userCpf]);
@@ -112,7 +113,8 @@ module.exports = class StockService {
         JOIN component c ON sl.fk_component_id = c.component_id
         JOIN user u ON sl.fk_user_cpf = u.user_cpf
         WHERE sl.fk_component_id = ?
-        AND sl.fk_user_cpf = ?`;
+        AND sl.fk_user_cpf = ?
+        ORDER BY sl.data_log DESC`;
 
         const values = [componentId, userCpf];
 
