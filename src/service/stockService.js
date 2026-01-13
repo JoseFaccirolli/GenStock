@@ -46,8 +46,8 @@ module.exports = class StockService {
             const queryCheck = `SELECT quantity FROM component WHERE component_id = ? AND fk_user_cpf = ?`;
             const [rows] = await connection.execute(queryCheck, [componentId, userCpf]);
 
-            if (rows.lenght === 0) {
-                throw { status: 404, message: "Component not found, access denied." }
+            if (rows.length === 0) {
+                throw { status: 404, message: "Component not found or access denied." }
             }
 
             const currentQuantity = rows[0].quantity;
@@ -90,7 +90,7 @@ module.exports = class StockService {
         JOIN component c ON sl.fk_component_id = c.component_id
         JOIN user u ON sl.fk_user_cpf = u.user_cpf
         WHERE sl.fk_user_cpf = ?
-        ODER BY sl.data_log DESC`;
+        ORDER BY sl.data_log DESC`;
 
         try {
             const [log] = await connect.execute(query, [userCpf]);

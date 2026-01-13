@@ -76,7 +76,7 @@ module.exports = class StockController {
             return res.status(200).json({
                 error: false,
                 message: "Logs fetched successfully.",
-                log: log
+                data: log
             });
         } catch (error) {
             return res.status(error.status || 500).json({
@@ -102,7 +102,7 @@ module.exports = class StockController {
             return res.status(200).json({
                 error: false,
                 message: "Logs fetched successfully.",
-                log: log
+                data: log
             }); 
         } catch (error) {
             return res.status(error.status || 500).json({
