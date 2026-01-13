@@ -1,5 +1,5 @@
-create database exampleDatabase;
-use exampleDatabase;
+create database GenStock;
+use GenStock;
 
 create table user (
     user_cpf char(11) primary key,
@@ -15,7 +15,7 @@ create table component (
     description varchar(255),
     fk_user_cpf char(11) not null,
     foreign key(fk_user_cpf) references user(user_cpf)
-    UNIQUE(component_name, fk_user_cpf) -- Constraint composta, unicidade por usuário
+    unique(component_name, fk_user_cpf) -- Constraint composta, unicidade por usuário
 );
 
 create table stock_log (
