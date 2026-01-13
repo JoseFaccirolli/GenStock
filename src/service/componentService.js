@@ -31,7 +31,7 @@ module.exports = class ComponentService {
             u.user_name as userName
         FROM component c 
         JOIN user u ON c.fk_user_cpf = u.user_cpf
-        WHERE c.fk_user_cpf = ?
+        WHERE c.fk_user_cpf = ? AND c.is_active = 1
         `;
 
         try {
@@ -63,7 +63,7 @@ module.exports = class ComponentService {
 
         values.push(componentId);
         values.push(userCpf);
-        const query = `UPDATE component SET ${updates.join(", ")} WHERE component_id = ? AND fk_user_cpf = ?`;
+        const query = `UPDATE component SET ${updates.join(", ")} WHERE component_id = ? AND fk_user_cpf = ? AND is_active = 1`;
 
         try {
             const [result] = await connect.execute(query, values);
