@@ -10,6 +10,7 @@ create table user (
 
 create table component (
     component_id int auto_increment primary key,
+    is_active boolean default true,
     component_name varchar(200) not null,
     quantity int not null,
     description varchar(255),
