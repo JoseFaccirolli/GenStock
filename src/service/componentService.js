@@ -69,6 +69,11 @@ module.exports = class ComponentService {
             values.push(description);
         }
 
+        // Debug shielding
+        if (updates.length === 0) {
+            throw { status: 400, message: "No fields provided for update." };
+        }
+
         values.push(componentId);
         values.push(userCpf);
         const query = `UPDATE component SET ${updates.join(", ")} WHERE component_id = ? AND fk_user_cpf = ? AND is_active = 1`;
