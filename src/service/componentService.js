@@ -2,22 +2,30 @@ const connect = require("../database/connect");
 
 module.exports = class ComponentService {
     static async createComponent(componentName, quantity, description, userCpf) {
-        const query = `INSERT INTO component (component_name, quantity, description, fk_user_cpf)
-        VALUES (?, ?, ?, ?)`;
-        const values = [componentName, quantity, description, userCpf];
-
+        const verifyQuery = `SELECT component_id, is_active FROM component WHERE component_name = ? AND fk_user_cpf = ?`;
+        const verifyValues = [componentName, userCpf];
         try {
-            const [result] = await connect.execute(query, values);
+            const [rows] = await connect.execute(verifyQuery, verifyValues);
+            if (rows.length > 0 && rows[0].is_active) {
+                throw { status: 409, message: "This component already exists." }
+            }
+            if (rows.length > 0 && !rows[0].is_active) {
+                const componentId = rows[0].component_id;
+                const activationQuery = `UPDATE component SET is_active = 1, quantity = ?, description = ? WHERE component_id = ? AND fk_user_cpf = ?`;
+                const activationValues = [quantity, description, componentId, userCpf];
+
+                const [result] = await connect.execute(activationQuery, activationValues);
+                return result;
+            }
+            const createQuery = `INSERT INTO component (component_name, quantity, description, fk_user_cpf)
+    VALUES (?, ?, ?, ?)`;
+            const createValues = [componentName, quantity, description, userCpf];
+
+            const [result] = await connect.execute(createQuery, createValues);
             return result;
         } catch (error) {
             if (error.status) throw error;
-            if (error.code === "ER_NO_REFERENCED_ROW_2" || error.code === "ER_NO_REFERENCED_ROW_1") {
-                throw { status: 404, message: "User not found. Component cannot be created." }
-            }
-            if (error.code === "ER_DUP_ENTRY") {
-                throw { status: 409, message: "This component already exists." }
-            }
-            throw { status: 500, message: "Internal Server Error." }
+            throw { status: 500, message: "Internal Server Error" }
         }
     }
 
