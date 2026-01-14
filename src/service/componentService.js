@@ -82,7 +82,7 @@ module.exports = class ComponentService {
         } catch (error) {
             if (error.status) throw error;
             if (error.code === "ER_DUP_ENTRY") {
-                throw { status: 409, message: "Component name already exists." }
+                throw { status: 409, message: "This name belongs to an archived, inactive or existing item." }
             }
             throw { status: 500, message: "Internal Server Error." }
         }
