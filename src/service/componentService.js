@@ -25,7 +25,7 @@ module.exports = class ComponentService {
             return result;
         } catch (error) {
             if (error.status) throw error;
-            throw { status: 500, message: "Internal Server Error" }
+            throw { status: 500, message: "Internal Server Error." }
         }
     }
 
@@ -94,18 +94,36 @@ module.exports = class ComponentService {
     }
 
     static async deleteComponent(componentId, userCpf) {
-        const query = `UPDATE component SET is_active = 0 WHERE component_id = ? AND fk_user_cpf = ?`;
-        const values = [componentId, userCpf];
+        const connection = await connect.getConnection();
 
         try {
-            const [result] = await connect.execute(query, values)
-            if (result.affectedRows === 0) {
-                throw { status: 404, message: "Component not found." }
+            await connection.beginTransaction();
+
+            const selectQuery = `SELECT * FROM component WHERE component_id = ? AND fk_user_cpf = ?`;
+            const selectValues = [componentId, userCpf];
+
+            const [rows] = await connection.execute(selectQuery, selectValues);
+            if (rows.length === 0) {
+                throw { status: 404, message: "Component not found or access denied." }
             }
-            return result;
+            const remaining = rows[0].quantity;
+
+            const deleteQuery = `UPDATE component SET is_active = 0, quantity = 0 WHERE component_id = ? AND fk_user_cpf = ?`;
+            const deleteValues = [componentId, userCpf];
+            await connection.execute(deleteQuery, deleteValues);
+
+            const logQuery = `INSERT INTO stock_log (log_status, quantity_changed, fk_component_id, fk_user_cpf) 
+            VALUES (?, ?, ?, ?)`;
+            const logValues = ["deleted", remaining, componentId, userCpf];
+            await connection.execute(logQuery, logValues);
+
+            await connection.commit();
         } catch (error) {
+            await connection.rollback();
             if (error.status) throw error;
-            throw { status: 500, message: "Internal Server Error" }
+            throw { status: 500, message: "Internal Server Error." }
+        } finally {
+            connection.release();
         }
     }
 }

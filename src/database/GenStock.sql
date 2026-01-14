@@ -21,7 +21,7 @@ create table component (
 
 create table stock_log (
     log_id int auto_increment primary key,
-    log_status enum("in", "out") not null,
+    log_status enum("in", "out", "deleted") not null,
     quantity_changed int not null,
     data_log datetime default current_timestamp,
     fk_component_id int not null,
