@@ -25,6 +25,9 @@ module.exports = class ComponentService {
             return result;
         } catch (error) {
             if (error.status) throw error;
+            if (error.code === "ER_NO_REFERENCED_ROW_2"){
+               throw { status: 404, message: "User not found." }
+            }
             throw { status: 500, message: "Internal Server Error." }
         }
     }
@@ -38,7 +41,7 @@ module.exports = class ComponentService {
             c.description, 
             u.user_name as userName
         FROM component c 
-        JOIN user u ON c.fk_user_cpf = u.user_cpf
+        JOIN users u ON c.fk_user_cpf = u.user_cpf
         WHERE c.fk_user_cpf = ? AND c.is_active = 1
         `;
 

@@ -1,7 +1,7 @@
 create database GenStock;
 use GenStock;
 
-create table user (
+create table users (
     user_cpf char(11) primary key,
     user_email varchar(150) unique not null,
     user_password varchar(255) not null,
@@ -15,7 +15,7 @@ create table component (
     quantity int not null,
     description varchar(255),
     fk_user_cpf char(11) not null,
-    foreign key(fk_user_cpf) references user(user_cpf) on delete cascade,
+    foreign key(fk_user_cpf) references users(user_cpf) on delete cascade,
     unique(component_name, fk_user_cpf)
 );
 
@@ -27,5 +27,5 @@ create table stock_log (
     fk_component_id int not null,
     fk_user_cpf char(11) not null,
     foreign key(fk_component_id) references component(component_id) on delete cascade,
-    foreign key(fk_user_cpf) references user(user_cpf)
+    foreign key(fk_user_cpf) references users(user_cpf)
 );

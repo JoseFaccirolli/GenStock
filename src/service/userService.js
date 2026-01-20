@@ -13,7 +13,7 @@ module.exports = class UserService {
 
         const hashedPassword = await bcrypt.hash(userPassword, SALT_ROUNDS);
 
-        const query = `INSERT INTO user (user_cpf, user_email, user_password, user_name)
+        const query = `INSERT INTO users (user_cpf, user_email, user_password, user_name)
         VALUES (?, ?, ?, ?)`;
         const values = [userCpf, userEmail, hashedPassword, userName];
 
@@ -29,7 +29,7 @@ module.exports = class UserService {
     }
     
     static async readAllUsers() {
-        const query = `SELECT user_cpf, user_email, user_name FROM user`;
+        const query = `SELECT user_cpf, user_email, user_name FROM users`;
         
         try {
             const [users] = await connect.execute(query);
@@ -68,7 +68,7 @@ module.exports = class UserService {
         }
 
         values.push(userCpf);
-        const query = `UPDATE user SET ${updates.join(", ")} WHERE user_cpf = ?`;
+        const query = `UPDATE users SET ${updates.join(", ")} WHERE user_cpf = ?`;
 
         try {
             const [result] = await connect.execute(query, values);
@@ -89,7 +89,7 @@ module.exports = class UserService {
         if ( isNaN(userCpf) || userCpf.length !== 11 ) {
             throw { status: 400, message: "Invalid Cpf. Must contain 11 numeric characters." }
         }
-        const query = `DELETE FROM user WHERE user_cpf = ?`;
+        const query = `DELETE FROM users WHERE user_cpf = ?`;
 
         try {
             const [result] = await connect.execute(query, [userCpf]);
@@ -105,7 +105,7 @@ module.exports = class UserService {
     }
 
     static async loginUser(userEmail, userPassword) {
-        const query = `SELECT user_cpf, user_email, user_name, user_password FROM user WHERE user_email = ?`;
+        const query = `SELECT user_cpf, user_email, user_name, user_password FROM users WHERE user_email = ?`;
 
         try {
             const [result] = await connect.execute(query, [userEmail]);

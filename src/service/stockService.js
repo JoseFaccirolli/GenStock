@@ -88,7 +88,7 @@ module.exports = class StockService {
         u.user_name
         FROM stock_log sl
         JOIN component c ON sl.fk_component_id = c.component_id
-        JOIN user u ON sl.fk_user_cpf = u.user_cpf
+        JOIN users u ON sl.fk_user_cpf = u.user_cpf
         WHERE sl.fk_user_cpf = ?
         ORDER BY sl.data_log DESC`;
 
