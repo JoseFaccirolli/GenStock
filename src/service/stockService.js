@@ -2,23 +2,23 @@ const pool = require("../database/connect");
 const connect = require("../database/connect");
 
 module.exports = class StockService {
-    static async entry(componentId, quantity, userCpf) {
+    static async entry(componentId, quantity, userId) {
         const connection = await pool.getConnection();
 
         try {
             await connection.beginTransaction();
 
-            const queryEntry = `UPDATE component SET quantity = quantity + ? WHERE component_id = ? AND fk_user_cpf = ?`;
-            const entryValues = [quantity, componentId, userCpf];
+            const queryEntry = `UPDATE component SET quantity = quantity + ? WHERE component_id = ? AND fk_user_id = ?`;
+            const entryValues = [quantity, componentId, userId];
             const [result] = await connection.execute(queryEntry, entryValues);
 
             if (result.affectedRows === 0) {
                 throw { status: 404, message: "Component not found or access denied." }
             }
 
-            const queryLog = `INSERT INTO stock_log (log_status, quantity_changed, fk_component_id, fk_user_cpf) 
+            const queryLog = `INSERT INTO stock_log (log_status, quantity_changed, fk_component_id, fk_user_id) 
             VALUES (?, ?, ?, ?)`;
-            const logValues = ["in", quantity, componentId, userCpf];
+            const logValues = ["in", quantity, componentId, userId];
             await connection.execute(queryLog, logValues);
 
             await connection.commit();
@@ -37,14 +37,14 @@ module.exports = class StockService {
         }
     }
 
-    static async exit(componentId, quantity, userCpf) {
+    static async exit(componentId, quantity, userId) {
         const connection = await pool.getConnection();
 
         try {
             await connection.beginTransaction();
 
-            const queryCheck = `SELECT quantity FROM component WHERE component_id = ? AND fk_user_cpf = ?`;
-            const [rows] = await connection.execute(queryCheck, [componentId, userCpf]);
+            const queryCheck = `SELECT quantity FROM component WHERE component_id = ? AND fk_user_id = ?`;
+            const [rows] = await connection.execute(queryCheck, [componentId, userId]);
 
             if (rows.length === 0) {
                 throw { status: 404, message: "Component not found or access denied." }
@@ -56,13 +56,13 @@ module.exports = class StockService {
                 throw { status: 400, message: "Insufficient stock." }
             }
 
-            const queryExit = `UPDATE component SET quantity = quantity - ? WHERE component_id = ? AND fk_user_cpf = ?`;
-            const exitValues = [quantity, componentId, userCpf];
+            const queryExit = `UPDATE component SET quantity = quantity - ? WHERE component_id = ? AND fk_user_id = ?`;
+            const exitValues = [quantity, componentId, userId];
             await connection.execute(queryExit, exitValues);
 
-            const queryLog = `INSERT INTO stock_log (log_status, quantity_changed, fk_component_id, fk_user_cpf) 
+            const queryLog = `INSERT INTO stock_log (log_status, quantity_changed, fk_component_id, fk_user_id) 
             VALUES (?, ?, ?, ?)`;
-            const logValues = ["out", quantity, componentId, userCpf];
+            const logValues = ["out", quantity, componentId, userId];
             await connection.execute(queryLog, logValues);
 
             await connection.commit();
