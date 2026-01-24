@@ -58,7 +58,7 @@ module.exports = class ComponentController {
 
     static async updateComponent(req, res) {
         const { componentId } = req.params
-        const { componentName, description, userCpf } = req.body;
+        const { componentName, description, userId } = req.body;
 
         if (!componentName && description === undefined) {
             return res.status(400).json({
@@ -67,15 +67,15 @@ module.exports = class ComponentController {
             });
         }
 
-        if (!userCpf) {
+        if (!userId) {
             return res.status(400).json({
                 error: true,
-                message: "User CPF is required."
+                message: "User ID is required."
             });
         }
 
         try {
-            await ComponentService.updateComponent(componentName, description, componentId, userCpf);
+            await ComponentService.updateComponent(componentName, description, componentId, userId);
             return res.status(200).json({
                 error: false,
                 message: "Component updated successfully."
@@ -90,7 +90,7 @@ module.exports = class ComponentController {
 
     static async deleteComponent(req, res) {
         const { componentId } = req.params;
-        const { userCpf } = req.body;
+        const { userId } = req.body;
 
         if (!componentId || isNaN(componentId)) {
             return res.status(400).json({
@@ -99,15 +99,15 @@ module.exports = class ComponentController {
             });
         }
 
-        if (!userCpf) {
+        if (!userId) {
             return res.status(400).json({
                 error: true,
-                message: "User CPF is required"
+                message: "User id is required"
             });
         }
 
         try {
-            await ComponentService.deleteComponent(componentId, userCpf);
+            await ComponentService.deleteComponent(componentId, userId);
             return res.status(200).json({
                 error: false,
                 message: "Component deleted successfully"

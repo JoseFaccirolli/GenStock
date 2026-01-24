@@ -54,7 +54,7 @@ module.exports = class ComponentService {
         }
     }
 
-    static async updateComponent(componentName, description, componentId, userCpf) {
+    static async updateComponent(componentName, description, componentId, userId) {
         if (description && description.length > 255) {
             throw { status: 413, message: "Description is too long." }
         }
@@ -78,8 +78,8 @@ module.exports = class ComponentService {
         }
 
         values.push(componentId);
-        values.push(userCpf);
-        const query = `UPDATE component SET ${updates.join(", ")} WHERE component_id = ? AND fk_user_cpf = ? AND is_active = 1`;
+        values.push(userId);
+        const query = `UPDATE component SET ${updates.join(", ")} WHERE component_id = ? AND fk_user_id = ? AND is_active = 1`;
 
         try {
             const [result] = await connect.execute(query, values);
@@ -96,14 +96,14 @@ module.exports = class ComponentService {
         }
     }
 
-    static async deleteComponent(componentId, userCpf) {
+    static async deleteComponent(componentId, userId) {
         const connection = await connect.getConnection();
 
         try {
             await connection.beginTransaction();
 
-            const selectQuery = `SELECT * FROM component WHERE component_id = ? AND fk_user_cpf = ?`;
-            const selectValues = [componentId, userCpf];
+            const selectQuery = `SELECT * FROM component WHERE component_id = ? AND fk_user_id = ?`;
+            const selectValues = [componentId, userId];
 
             const [rows] = await connection.execute(selectQuery, selectValues);
             if (rows.length === 0) {
@@ -111,13 +111,13 @@ module.exports = class ComponentService {
             }
             const remaining = rows[0].quantity;
 
-            const deleteQuery = `UPDATE component SET is_active = 0, quantity = 0 WHERE component_id = ? AND fk_user_cpf = ?`;
-            const deleteValues = [componentId, userCpf];
+            const deleteQuery = `UPDATE component SET is_active = 0, quantity = 0 WHERE component_id = ? AND fk_user_id = ?`;
+            const deleteValues = [componentId, userId];
             await connection.execute(deleteQuery, deleteValues);
 
-            const logQuery = `INSERT INTO stock_log (log_status, quantity_changed, fk_component_id, fk_user_cpf) 
+            const logQuery = `INSERT INTO stock_log (log_status, quantity_changed, fk_component_id, fk_user_id) 
             VALUES (?, ?, ?, ?)`;
-            const logValues = ["deleted", remaining, componentId, userCpf];
+            const logValues = ["deleted", remaining, componentId, userId];
             await connection.execute(logQuery, logValues);
 
             await connection.commit();
