@@ -4,10 +4,16 @@ module.exports = class StockController {
     static async entry(req, res) {
         const { componentId, quantity, userId } = req.body;
 
-        if (!componentId || !quantity || !userId) {
+        if (!componentId || !quantity) {
             return res.status(400).json({
                 error: true,
                 message: "Missing required fields."
+            });
+        }
+        if (!userId || userId.length !== 36) {
+            return res.status(400).json({
+                error: true,
+                message: "Invalid User ID format."
             });
         }
         if (isNaN(quantity) || quantity <= 0) {
@@ -34,10 +40,16 @@ module.exports = class StockController {
     static async exit(req, res) {
         const { componentId, quantity, userId } = req.body;
 
-        if (!componentId || !quantity || !userId) {
+        if (!componentId || !quantity) {
             return res.status(400).json({
                 error: true,
                 message: "Missing required fields."
+            });
+        }
+        if (!userId || userId.length !== 36) {
+            return res.status(400).json({
+                error: true,
+                message: "Invalid User ID format."
             });
         }
         if (isNaN(quantity) || quantity <= 0) {
@@ -64,10 +76,10 @@ module.exports = class StockController {
     static async readAllLogs(req, res) {
         const { userId } = req.body;
 
-        if (!userId) {
+        if (!userId || userId.length !== 36) {
             return res.status(400).json({
                 error: true,
-                message: "User ID is required."
+                message: "Invalid User ID format."
             });
         }
 
@@ -90,10 +102,10 @@ module.exports = class StockController {
         const { componentId } = req.params;
         const { userId } = req.body;
 
-        if (!userId) {
+        if (!userId || userId.length !== 36) {
             return res.status(400).json({
                 error: true,
-                message: "User ID is required"
+                message: "Invalid User ID format."
             });
         }
 

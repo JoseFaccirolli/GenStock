@@ -34,10 +34,10 @@ module.exports = class ComponentController {
     static async readAllComponents(req, res) {
         const { userId } = req.body;
 
-        if (!userId) {
+        if (!userId || userId.length !== 36) {
             return res.status(400).json({
                 error: true,
-                message: "User ID is required."
+                message: "Invalid User ID format."
             });
         }
 
@@ -67,10 +67,10 @@ module.exports = class ComponentController {
             });
         }
 
-        if (!userId) {
+        if (!userId || userId.length !== 36) {
             return res.status(400).json({
                 error: true,
-                message: "User ID is required."
+                message: "Invalid User ID format."
             });
         }
 
@@ -99,10 +99,10 @@ module.exports = class ComponentController {
             });
         }
 
-        if (!userId) {
+        if (!userId || userId.length !== 36) {
             return res.status(400).json({
                 error: true,
-                message: "User id is required"
+                message: "Invalid User ID format."
             });
         }
 

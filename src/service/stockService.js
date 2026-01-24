@@ -1,9 +1,8 @@
-const pool = require("../database/connect");
 const connect = require("../database/connect");
 
 module.exports = class StockService {
     static async entry(componentId, quantity, userId) {
-        const connection = await pool.getConnection();
+        const connection = await connect.getConnection();
 
         try {
             await connection.beginTransaction();
@@ -37,7 +36,7 @@ module.exports = class StockService {
     }
 
     static async exit(componentId, quantity, userId) {
-        const connection = await pool.getConnection();
+        const connection = await connect.getConnection();
 
         try {
             await connection.beginTransaction();
