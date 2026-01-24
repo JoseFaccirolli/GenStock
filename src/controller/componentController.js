@@ -2,9 +2,9 @@ const ComponentService = require("../service/componentService");
 
 module.exports = class ComponentController {
     static async createComponent(req, res) {
-        const { componentName, quantity, description, userCpf } = req.body;
+        const { componentName, quantity, description, userId } = req.body;
 
-        if (!componentName || quantity === undefined || !userCpf) {
+        if (!componentName || quantity === undefined || !userId) {
             return res.status(400).json({
                 error: true,
                 message: "Missing required fields."
@@ -18,7 +18,7 @@ module.exports = class ComponentController {
         }
 
         try {
-            await ComponentService.createComponent(componentName, quantity, description, userCpf);
+            await ComponentService.createComponent(componentName, quantity, description, userId);
             return res.status(201).json({
                 error: false,
                 message: "Component successfully created."
@@ -32,17 +32,17 @@ module.exports = class ComponentController {
     }
 
     static async readAllComponents(req, res) {
-        const { userCpf } = req.body;
+        const { userId } = req.body;
 
-        if (!userCpf) {
+        if (!userId) {
             return res.status(400).json({
                 error: true,
-                message: "User CPF is required."
+                message: "User ID is required."
             });
         }
 
         try {
-            const components = await ComponentService.readAllComponents(userCpf);
+            const components = await ComponentService.readAllComponents(userId);
             return res.status(200).json({
                 error: false,
                 message: "Components fetched successfully.",
