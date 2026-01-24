@@ -40,10 +40,7 @@ module.exports = class UserService {
         }
     }
 
-    static async updateUser(userCpf, { userEmail, userPassword, userName }) {
-        if (isNaN(userCpf) || userCpf.length !== 11) {
-            throw { status: 400, message: "Invalid CPF. Must contain 11 numeric characters." }
-        }
+    static async updateUser(userId, { userEmail, userPassword, userName }) {
 
         const updates = []
         const values = []
@@ -68,8 +65,8 @@ module.exports = class UserService {
             throw { status: 400, message: "No fields to update." }
         }
 
-        values.push(userCpf);
-        const query = `UPDATE users SET ${updates.join(", ")} WHERE user_cpf = ?`;
+        values.push(userId);
+        const query = `UPDATE users SET ${updates.join(", ")} WHERE user_id = ?`;
 
         try {
             const [result] = await connect.execute(query, values);
@@ -86,20 +83,16 @@ module.exports = class UserService {
         }
     }
     
-    static async deleteUser(userCpf) {
-        if ( isNaN(userCpf) || userCpf.length !== 11 ) {
-            throw { status: 400, message: "Invalid Cpf. Must contain 11 numeric characters." }
-        }
-        const query = `DELETE FROM users WHERE user_cpf = ?`;
+    static async deleteUser(userId) {
+        const query = `DELETE FROM users WHERE user_id = ?`;
 
         try {
-            const [result] = await connect.execute(query, [userCpf]);
+            const [result] = await connect.execute(query, [userId]);
             if (result.affectedRows === 0) {
                 throw { status: 404, message: "User not found." }
             }
             return result;
         } catch (error) {
-            console.log(error)
             if (error.status) throw error;
             throw { status: 500, message: "Internal Server Error." }
         }
