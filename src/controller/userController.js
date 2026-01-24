@@ -41,7 +41,7 @@ module.exports = class UserController {
     }
 
     static async updateUser(req, res) {
-        const { userCpf } = req.params;
+        const { userId } = req.params;
         const { userEmail, userPassword, userName } = req.body;
 
         if (!userEmail && !userPassword && !userName) {
@@ -52,7 +52,7 @@ module.exports = class UserController {
         }
 
         try {
-            await UserService.updateUser(userCpf, { userEmail, userPassword, userName });
+            await UserService.updateUser(userId, { userEmail, userPassword, userName });
             return res.status(200).json({
                 error: false,
                 message: "User updated successfully."
@@ -66,17 +66,10 @@ module.exports = class UserController {
     }
 
     static async deleteUser(req,res) {
-        const { userCpf } = req.params;
-
-        if (!userCpf) {
-            return res.status(400).json({
-                error: true,
-                message: "CPF is required."
-            });
-        }
+        const { userId } = req.params;
 
         try {
-            await UserService.deleteUser(userCpf);
+            await UserService.deleteUser(userId);
             return res.status(200).json({
                 error: false,
                 message: "User deleted successfully."

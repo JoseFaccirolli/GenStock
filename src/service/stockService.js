@@ -2,30 +2,29 @@ const pool = require("../database/connect");
 const connect = require("../database/connect");
 
 module.exports = class StockService {
-    static async entry(componentId, quantity, userCpf) {
+    static async entry(componentId, quantity, userId) {
         const connection = await pool.getConnection();
 
         try {
             await connection.beginTransaction();
 
-            const queryEntry = `UPDATE component SET quantity = quantity + ? WHERE component_id = ? AND fk_user_cpf = ?`;
-            const entryValues = [quantity, componentId, userCpf];
+            const queryEntry = `UPDATE component SET quantity = quantity + ? WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
+            const entryValues = [quantity, componentId, userId];
             const [result] = await connection.execute(queryEntry, entryValues);
 
             if (result.affectedRows === 0) {
                 throw { status: 404, message: "Component not found or access denied." }
             }
 
-            const queryLog = `INSERT INTO stock_log (log_status, quantity_changed, fk_component_id, fk_user_cpf) 
+            const queryLog = `INSERT INTO stock_log (log_status, quantity_changed, fk_component_id, fk_user_id) 
             VALUES (?, ?, ?, ?)`;
-            const logValues = ["in", quantity, componentId, userCpf];
+            const logValues = ["in", quantity, componentId, userId];
             await connection.execute(queryLog, logValues);
 
             await connection.commit();
             return true;
         } catch (error) {
             await connection.rollback();
-
             if (error.code === "ER_NO_REFERENCED_ROW_2") {
                 throw { status: 404, message: "User not found." }
             }
@@ -37,14 +36,14 @@ module.exports = class StockService {
         }
     }
 
-    static async exit(componentId, quantity, userCpf) {
+    static async exit(componentId, quantity, userId) {
         const connection = await pool.getConnection();
 
         try {
             await connection.beginTransaction();
 
-            const queryCheck = `SELECT quantity FROM component WHERE component_id = ? AND fk_user_cpf = ?`;
-            const [rows] = await connection.execute(queryCheck, [componentId, userCpf]);
+            const queryCheck = `SELECT quantity FROM component WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
+            const [rows] = await connection.execute(queryCheck, [componentId, userId]);
 
             if (rows.length === 0) {
                 throw { status: 404, message: "Component not found or access denied." }
@@ -56,13 +55,13 @@ module.exports = class StockService {
                 throw { status: 400, message: "Insufficient stock." }
             }
 
-            const queryExit = `UPDATE component SET quantity = quantity - ? WHERE component_id = ? AND fk_user_cpf = ?`;
-            const exitValues = [quantity, componentId, userCpf];
+            const queryExit = `UPDATE component SET quantity = quantity - ? WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
+            const exitValues = [quantity, componentId, userId];
             await connection.execute(queryExit, exitValues);
 
-            const queryLog = `INSERT INTO stock_log (log_status, quantity_changed, fk_component_id, fk_user_cpf) 
+            const queryLog = `INSERT INTO stock_log (log_status, quantity_changed, fk_component_id, fk_user_id) 
             VALUES (?, ?, ?, ?)`;
-            const logValues = ["out", quantity, componentId, userCpf];
+            const logValues = ["out", quantity, componentId, userId];
             await connection.execute(queryLog, logValues);
 
             await connection.commit();
@@ -78,7 +77,7 @@ module.exports = class StockService {
         }
     }
 
-    static async readAllLogs(userCpf) {
+    static async readAllLogs(userId) {
         const query = `SELECT 
         sl.log_id,
         sl.log_status,
@@ -88,12 +87,12 @@ module.exports = class StockService {
         u.user_name
         FROM stock_log sl
         JOIN component c ON sl.fk_component_id = c.component_id
-        JOIN users u ON sl.fk_user_cpf = u.user_cpf
-        WHERE sl.fk_user_cpf = ?
+        JOIN users u ON sl.fk_user_id = u.user_id
+        WHERE sl.fk_user_id = ?
         ORDER BY sl.data_log DESC`;
 
         try {
-            const [log] = await connect.execute(query, [userCpf]);
+            const [log] = await connect.execute(query, [userId]);
             return log;        
         } catch (error) {
             if (error.status) throw error;
@@ -101,7 +100,7 @@ module.exports = class StockService {
         }
     }
 
-    static async readLogById(componentId, userCpf) {
+    static async readLogById(componentId, userId) {
         const query = `SELECT
         sl.log_id,
         sl.log_status,
@@ -111,12 +110,12 @@ module.exports = class StockService {
         u.user_name
         FROM stock_log sl
         JOIN component c ON sl.fk_component_id = c.component_id
-        JOIN user u ON sl.fk_user_cpf = u.user_cpf
+        JOIN users u ON sl.fk_user_id = u.user_id
         WHERE sl.fk_component_id = ?
-        AND sl.fk_user_cpf = ?
+        AND sl.fk_user_id = ?
         ORDER BY sl.data_log DESC`;
 
-        const values = [componentId, userCpf];
+        const values = [componentId, userId];
 
         try {
             const [log] = await connect.execute(query, values);
