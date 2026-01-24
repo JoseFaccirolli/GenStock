@@ -6,8 +6,8 @@ const UserController = require("../controller/userController");
 // -------------------- USUARIO -------------------- //
 router.post("/user", UserController.createUser);
 router.get("/user", UserController.readAllUsers);
-router.patch("/user/:userCpf", UserController.updateUser);
-router.delete("/user/:userCpf", UserController.deleteUser);
+router.patch("/user/:userId", UserController.updateUser);
+router.delete("/user/:userId", UserController.deleteUser);
 router.post("/user/login", UserController.loginUser);
 
 // -------------------- COMPONENTS -------------------- //

@@ -1,4 +1,5 @@
 const connect = require("../database/connect");
+const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const SALT_ROUNDS = 10;
 
@@ -12,10 +13,10 @@ module.exports = class UserService {
         }
 
         const hashedPassword = await bcrypt.hash(userPassword, SALT_ROUNDS);
-
-        const query = `INSERT INTO users (user_cpf, user_email, user_password, user_name)
-        VALUES (?, ?, ?, ?)`;
-        const values = [userCpf, userEmail, hashedPassword, userName];
+        const userId = crypto.randomUUID();
+        const query = `INSERT INTO users (user_id, user_cpf, user_email, user_password, user_name)
+        VALUES (?, ?, ?, ?, ?)`;
+        const values = [userId, userCpf, userEmail, hashedPassword, userName];
 
         try {
             const [result] = await connect.execute(query, values);
@@ -29,7 +30,7 @@ module.exports = class UserService {
     }
     
     static async readAllUsers() {
-        const query = `SELECT user_cpf, user_email, user_name FROM users`;
+        const query = `SELECT user_id, user_cpf, user_email, user_name FROM users`;
         
         try {
             const [users] = await connect.execute(query);
