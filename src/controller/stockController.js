@@ -62,17 +62,17 @@ module.exports = class StockController {
     }
 
     static async readAllLogs(req, res) {
-        const { userCpf } = req.body;
+        const { userId } = req.body;
 
-        if (!userCpf) {
+        if (!userId) {
             return res.status(400).json({
                 error: true,
-                message: "User CPF is required."
+                message: "User ID is required."
             });
         }
 
         try {
-            const log = await StockService.readAllLogs(userCpf);
+            const log = await StockService.readAllLogs(userId);
             return res.status(200).json({
                 error: false,
                 message: "Logs fetched successfully.",
@@ -88,17 +88,17 @@ module.exports = class StockController {
 
     static async readLogById(req, res) {
         const { componentId } = req.params;
-        const { userCpf } = req.body;
+        const { userId } = req.body;
 
-        if (!userCpf) {
+        if (!userId) {
             return res.status(400).json({
                 error: true,
-                message: "User CPF is required"
+                message: "User ID is required"
             });
         }
 
         try {
-            const log = await StockService.readLogById(componentId, userCpf);
+            const log = await StockService.readLogById(componentId, userId);
             return res.status(200).json({
                 error: false,
                 message: "Logs fetched successfully.",

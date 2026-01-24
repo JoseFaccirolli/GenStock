@@ -8,7 +8,7 @@ module.exports = class StockService {
         try {
             await connection.beginTransaction();
 
-            const queryEntry = `UPDATE component SET quantity = quantity + ? WHERE component_id = ? AND fk_user_id = ?`;
+            const queryEntry = `UPDATE component SET quantity = quantity + ? WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
             const entryValues = [quantity, componentId, userId];
             const [result] = await connection.execute(queryEntry, entryValues);
 
@@ -25,7 +25,6 @@ module.exports = class StockService {
             return true;
         } catch (error) {
             await connection.rollback();
-
             if (error.code === "ER_NO_REFERENCED_ROW_2") {
                 throw { status: 404, message: "User not found." }
             }
@@ -43,7 +42,7 @@ module.exports = class StockService {
         try {
             await connection.beginTransaction();
 
-            const queryCheck = `SELECT quantity FROM component WHERE component_id = ? AND fk_user_id = ?`;
+            const queryCheck = `SELECT quantity FROM component WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
             const [rows] = await connection.execute(queryCheck, [componentId, userId]);
 
             if (rows.length === 0) {
@@ -56,7 +55,7 @@ module.exports = class StockService {
                 throw { status: 400, message: "Insufficient stock." }
             }
 
-            const queryExit = `UPDATE component SET quantity = quantity - ? WHERE component_id = ? AND fk_user_id = ?`;
+            const queryExit = `UPDATE component SET quantity = quantity - ? WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
             const exitValues = [quantity, componentId, userId];
             await connection.execute(queryExit, exitValues);
 
@@ -78,7 +77,7 @@ module.exports = class StockService {
         }
     }
 
-    static async readAllLogs(userCpf) {
+    static async readAllLogs(userId) {
         const query = `SELECT 
         sl.log_id,
         sl.log_status,
@@ -88,12 +87,12 @@ module.exports = class StockService {
         u.user_name
         FROM stock_log sl
         JOIN component c ON sl.fk_component_id = c.component_id
-        JOIN users u ON sl.fk_user_cpf = u.user_cpf
-        WHERE sl.fk_user_cpf = ?
+        JOIN users u ON sl.fk_user_id = u.user_id
+        WHERE sl.fk_user_id = ?
         ORDER BY sl.data_log DESC`;
 
         try {
-            const [log] = await connect.execute(query, [userCpf]);
+            const [log] = await connect.execute(query, [userId]);
             return log;        
         } catch (error) {
             if (error.status) throw error;
@@ -101,7 +100,7 @@ module.exports = class StockService {
         }
     }
 
-    static async readLogById(componentId, userCpf) {
+    static async readLogById(componentId, userId) {
         const query = `SELECT
         sl.log_id,
         sl.log_status,
@@ -111,12 +110,12 @@ module.exports = class StockService {
         u.user_name
         FROM stock_log sl
         JOIN component c ON sl.fk_component_id = c.component_id
-        JOIN user u ON sl.fk_user_cpf = u.user_cpf
+        JOIN users u ON sl.fk_user_id = u.user_id
         WHERE sl.fk_component_id = ?
-        AND sl.fk_user_cpf = ?
+        AND sl.fk_user_id = ?
         ORDER BY sl.data_log DESC`;
 
-        const values = [componentId, userCpf];
+        const values = [componentId, userId];
 
         try {
             const [log] = await connect.execute(query, values);
