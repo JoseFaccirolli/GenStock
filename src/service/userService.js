@@ -99,7 +99,7 @@ module.exports = class UserService {
     }
 
     static async loginUser(userEmail, userPassword) {
-        const query = `SELECT user_cpf, user_email, user_name, user_password FROM users WHERE user_email = ?`;
+        const query = `SELECT user_id, user_cpf, user_email, user_name, user_password FROM users WHERE user_email = ?`;
 
         try {
             const [result] = await connect.execute(query, [userEmail]);
