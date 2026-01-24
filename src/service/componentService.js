@@ -84,7 +84,7 @@ module.exports = class ComponentService {
         try {
             const [result] = await connect.execute(query, values);
             if (result.affectedRows === 0) {
-                throw { status: 404, message: "Component not found." }
+                throw { status: 404, message: "Component or user not found." }
             }
             return result;
         } catch (error) {
