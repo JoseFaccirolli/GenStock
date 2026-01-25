@@ -14,7 +14,7 @@ module.exports = class StockService {
                 throw { status: 404, message: "Component not found or access denied." }
             }
 
-            const newQuantity = rows[0].quantity + quantity;
+            const newQuantity = Number(rows[0].quantity) + Number(quantity);
 
             const queryEntry = `UPDATE component SET quantity = ? WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
             const entryValues = [newQuantity, componentId, userId];
@@ -60,7 +60,7 @@ module.exports = class StockService {
                 throw { status: 400, message: "Insufficient stock." }
             }
 
-            const newQuantity = currentQuantity - quantity
+            const newQuantity = Number(currentQuantity) - Number(quantity)
 
             const queryExit = `UPDATE component SET quantity = ? WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
             const exitValues = [newQuantity, componentId, userId];
