@@ -115,9 +115,9 @@ module.exports = class ComponentService {
             const deleteValues = [componentId, userId];
             await connection.execute(deleteQuery, deleteValues);
 
-            const logQuery = `INSERT INTO stock_log (log_status, quantity_changed, fk_component_id, fk_user_id) 
-            VALUES (?, ?, ?, ?)`;
-            const logValues = ["deleted", remaining, componentId, userId];
+            const logQuery = `INSERT INTO stock_log (log_status, quantity_changed, quantity_after, fk_component_id, fk_user_id) 
+            VALUES (?, ?, ?, ?, ?)`;
+            const logValues = ["deleted", remaining, 0, componentId, userId];
             await connection.execute(logQuery, logValues);
 
             await connection.commit();

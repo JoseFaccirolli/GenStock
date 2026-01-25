@@ -7,17 +7,23 @@ module.exports = class StockService {
         try {
             await connection.beginTransaction();
 
-            const queryEntry = `UPDATE component SET quantity = quantity + ? WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
-            const entryValues = [quantity, componentId, userId];
-            const [result] = await connection.execute(queryEntry, entryValues);
+            const queryCheck = `SELECT quantity FROM component WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
+            const [rows] = await connection.execute(queryCheck, [componentId, userId]);
 
-            if (result.affectedRows === 0) {
+            if (rows.length === 0) {
                 throw { status: 404, message: "Component not found or access denied." }
             }
 
-            const queryLog = `INSERT INTO stock_log (log_status, quantity_changed, fk_component_id, fk_user_id) 
-            VALUES (?, ?, ?, ?)`;
-            const logValues = ["in", quantity, componentId, userId];
+            const newQuantity = rows[0].quantity + quantity;
+
+            const queryEntry = `UPDATE component SET quantity = ? WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
+            const entryValues = [newQuantity, componentId, userId];
+            await connection.execute(queryEntry, entryValues);
+
+
+            const queryLog = `INSERT INTO stock_log (log_status, quantity_changed, quantity_after, fk_component_id, fk_user_id) 
+            VALUES (?, ?, ?, ?, ?)`;
+            const logValues = ["in", quantity, newQuantity, componentId, userId];
             await connection.execute(queryLog, logValues);
 
             await connection.commit();
@@ -54,13 +60,15 @@ module.exports = class StockService {
                 throw { status: 400, message: "Insufficient stock." }
             }
 
-            const queryExit = `UPDATE component SET quantity = quantity - ? WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
-            const exitValues = [quantity, componentId, userId];
+            const newQuantity = currentQuantity - quantity
+
+            const queryExit = `UPDATE component SET quantity = ? WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
+            const exitValues = [newQuantity, componentId, userId];
             await connection.execute(queryExit, exitValues);
 
-            const queryLog = `INSERT INTO stock_log (log_status, quantity_changed, fk_component_id, fk_user_id) 
-            VALUES (?, ?, ?, ?)`;
-            const logValues = ["out", quantity, componentId, userId];
+            const queryLog = `INSERT INTO stock_log (log_status, quantity_changed, quantity_after, fk_component_id, fk_user_id) 
+            VALUES (?, ?, ?, ?, ?)`;
+            const logValues = ["out", quantity, newQuantity, componentId, userId];
             await connection.execute(queryLog, logValues);
 
             await connection.commit();
@@ -81,6 +89,7 @@ module.exports = class StockService {
         sl.log_id,
         sl.log_status,
         sl.quantity_changed,
+        sl.quantity_after,
         sl.data_log,
         c.component_name,
         u.user_name
@@ -104,6 +113,7 @@ module.exports = class StockService {
         sl.log_id,
         sl.log_status,
         sl.quantity_changed,
+        sl.quantity_after,
         sl.data_log,
         c.component_name,
         u.user_name
