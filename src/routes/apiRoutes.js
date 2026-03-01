@@ -14,13 +14,13 @@ router.post("/user/login", UserController.loginUser);
 // -------------------- COMPONENTS -------------------- //
 router.post("/component", ComponentController.createComponent);
 router.get("/component", verifyJWT, ComponentController.readAllComponents);
-router.patch("/component/:componentId", ComponentController.updateComponent);
-router.delete("/component/:componentId", ComponentController.deleteComponent); // soft delete
+router.patch("/component/:componentId", verifyJWT, ComponentController.updateComponent);
+router.delete("/component/:componentId", verifyJWT, ComponentController.deleteComponent); // soft delete
 
 // -------------------- STOCK & LOG -------------------- //
-router.patch("/stock/entry", StockController.entry);
-router.patch("/stock/exit", StockController.exit);
-router.get("/stock/log", StockController.readAllLogs);
-router.get("/stock/log/:componentId", StockController.readLogById);
+router.patch("/stock/entry", verifyJWT, StockController.entry);
+router.patch("/stock/exit", verifyJWT, StockController.exit);
+router.get("/stock/log", verifyJWT, StockController.readAllLogs);
+router.get("/stock/log/:componentId", verifyJWT, StockController.readLogById);
 
 module.exports = router;

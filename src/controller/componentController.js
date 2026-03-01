@@ -34,6 +34,13 @@ module.exports = class ComponentController {
     static async readAllComponents(req, res) {
         const userId = req.userId;
 
+        if (!userId || userId.length !== 36) {
+            return res.status(400).json({
+                error: true,
+                message: "Invalid User ID format."
+            });
+        }
+
         try {
             const components = await ComponentService.readAllComponents(userId);
             return res.status(200).json({
@@ -50,8 +57,9 @@ module.exports = class ComponentController {
     }
 
     static async updateComponent(req, res) {
-        const { componentId } = req.params
-        const { componentName, description, userId } = req.body;
+        const userId = req.userId;
+        const { componentId } = req.params;
+        const { componentName, description} = req.body;
 
         if (!componentName && description === undefined) {
             return res.status(400).json({
@@ -83,7 +91,7 @@ module.exports = class ComponentController {
 
     static async deleteComponent(req, res) {
         const { componentId } = req.params;
-        const { userId } = req.body;
+        const userId = req.userId;
 
         if (!componentId || isNaN(componentId)) {
             return res.status(400).json({

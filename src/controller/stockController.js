@@ -2,7 +2,8 @@ const StockService = require("../service/stockService");
 
 module.exports = class StockController {
     static async entry(req, res) {
-        const { componentId, quantity, userId } = req.body;
+        const userId = req.userId;
+        const { componentId, quantity} = req.body;
 
         if (!componentId || !quantity) {
             return res.status(400).json({
@@ -38,7 +39,8 @@ module.exports = class StockController {
     }
 
     static async exit(req, res) {
-        const { componentId, quantity, userId } = req.body;
+        const userId = req.userId;
+        const { componentId, quantity } = req.body;
 
         if (!componentId || !quantity) {
             return res.status(400).json({
@@ -74,7 +76,7 @@ module.exports = class StockController {
     }
 
     static async readAllLogs(req, res) {
-        const { userId } = req.body;
+        const userId = req.userId;
 
         if (!userId || userId.length !== 36) {
             return res.status(400).json({
@@ -100,7 +102,7 @@ module.exports = class StockController {
 
     static async readLogById(req, res) {
         const { componentId } = req.params;
-        const { userId } = req.body;
+        const userId = req.userId;
 
         if (!userId || userId.length !== 36) {
             return res.status(400).json({

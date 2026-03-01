@@ -102,7 +102,7 @@ module.exports = class ComponentService {
         try {
             await connection.beginTransaction();
 
-            const selectQuery = `SELECT * FROM component WHERE component_id = ? AND fk_user_id = ?`;
+            const selectQuery = `SELECT * FROM component WHERE component_id = ? AND fk_user_id = ? AND is_active = 1`;
             const selectValues = [componentId, userId];
 
             const [rows] = await connection.execute(selectQuery, selectValues);
