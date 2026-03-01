@@ -2,6 +2,7 @@ const connect = require("../database/connect");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const SALT_ROUNDS = 10;
+const jwt = require("jsonwebtoken");
 
 module.exports = class UserService {
     static async createUser(userCpf, userEmail, userPassword, userName) {
@@ -114,9 +115,13 @@ module.exports = class UserService {
                 throw { status: 401, message: "Invalid email or password." }
             }
 
+            const token = jwt.sign({ id: user.user_id }, process.env.SECRET, {
+                expiresIn: "1h"
+            });
+
             delete user.user_password;
 
-            return user;
+            return { user, token };
         } catch (error) {
             if (error.status) throw error;
             throw { status: 500, message: "Internal Server Error" }

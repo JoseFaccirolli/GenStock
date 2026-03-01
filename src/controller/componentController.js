@@ -32,14 +32,7 @@ module.exports = class ComponentController {
     }
 
     static async readAllComponents(req, res) {
-        const { userId } = req.body;
-
-        if (!userId || userId.length !== 36) {
-            return res.status(400).json({
-                error: true,
-                message: "Invalid User ID format."
-            });
-        }
+        const userId = req.userId;
 
         try {
             const components = await ComponentService.readAllComponents(userId);

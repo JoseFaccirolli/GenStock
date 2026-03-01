@@ -93,11 +93,12 @@ module.exports = class UserController {
         }
 
         try {
-            const user = await UserService.loginUser(userEmail, userPassword);
+            const { user, token } = await UserService.loginUser(userEmail, userPassword);
             return res.status(200).json({
                 error: false,
                 message: "User successfully logged in.",
-                user: user
+                user: user,
+                token
             });
         } catch (error) {
             return res.status(error.status || 500).json({
