@@ -41,7 +41,7 @@ module.exports = class UserController {
     }
 
     static async updateUser(req, res) {
-        const { userId } = req.params;
+        const userId = req.user.id;
         const { userEmail, userPassword, userName } = req.body;
 
         if (!userEmail && !userPassword && !userName) {
@@ -66,7 +66,7 @@ module.exports = class UserController {
     }
 
     static async deleteUser(req,res) {
-        const { userId } = req.params;
+        const userId = req.user.id;
 
         try {
             await UserService.deleteUser(userId);

@@ -6,13 +6,13 @@ const UserController = require("../controller/userController");
 
 // -------------------- USUARIO -------------------- //
 router.post("/user", UserController.createUser);
-router.get("/user", UserController.readAllUsers); // Somente para admin
-router.patch("/user/:userId", UserController.updateUser);
-router.delete("/user/:userId", UserController.deleteUser);
+router.get("/user", verifyJWT, UserController.readAllUsers);
+router.patch("/user", verifyJWT, UserController.updateUser);
+router.delete("/user", verifyJWT, UserController.deleteUser);
 router.post("/user/login", UserController.loginUser);
 
 // -------------------- COMPONENTS -------------------- //
-router.post("/component", ComponentController.createComponent);
+router.post("/component", verifyJWT, ComponentController.createComponent);
 router.get("/component", verifyJWT, ComponentController.readAllComponents);
 router.patch("/component/:componentId", verifyJWT, ComponentController.updateComponent);
 router.delete("/component/:componentId", verifyJWT, ComponentController.deleteComponent); // soft delete

@@ -31,7 +31,7 @@ module.exports = class UserService {
     }
     
     static async readAllUsers() {
-        const query = `SELECT user_id, user_cpf, user_email, user_name FROM users`;
+        const query = `SELECT user_id, user_cpf, user_email, user_name, user_type FROM users`;
         
         try {
             const [users] = await connect.execute(query);
@@ -100,7 +100,9 @@ module.exports = class UserService {
     }
 
     static async loginUser(userEmail, userPassword) {
-        const query = `SELECT user_id, user_cpf, user_email, user_name, user_password FROM users WHERE user_email = ?`;
+        const query = `SELECT user_id, user_cpf, user_email, user_name, user_password, user_type
+        FROM users
+        WHERE user_email = ?`;
 
         try {
             const [result] = await connect.execute(query, [userEmail]);
@@ -115,7 +117,7 @@ module.exports = class UserService {
                 throw { status: 401, message: "Invalid email or password." }
             }
 
-            const token = jwt.sign({ id: user.user_id }, process.env.SECRET, {
+            const token = jwt.sign({ id: user.user_id, type: user.user_type }, process.env.SECRET, {
                 expiresIn: "1h"
             });
 

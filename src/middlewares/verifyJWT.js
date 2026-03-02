@@ -12,7 +12,7 @@ function verifyJWT(req, res, next) {
             return res.status(403).json({ auth: false, message: "Token authentication failed." });
         }
 
-        req.userId = decoded.id;
+        req.user = decoded; // id + type
         next();
     });
 }

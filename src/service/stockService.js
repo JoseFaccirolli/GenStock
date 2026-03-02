@@ -7,7 +7,7 @@ module.exports = class StockService {
         try {
             await connection.beginTransaction();
 
-            const queryCheck = `SELECT quantity FROM component WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
+            const queryCheck = `SELECT quantity FROM components WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
             const [rows] = await connection.execute(queryCheck, [componentId, userId]);
 
             if (rows.length === 0) {
@@ -16,12 +16,12 @@ module.exports = class StockService {
 
             const newQuantity = Number(rows[0].quantity) + Number(quantity);
 
-            const queryEntry = `UPDATE component SET quantity = ? WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
+            const queryEntry = `UPDATE components SET quantity = ? WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
             const entryValues = [newQuantity, componentId, userId];
             await connection.execute(queryEntry, entryValues);
 
 
-            const queryLog = `INSERT INTO stock_log (log_status, quantity_changed, quantity_after, fk_component_id, fk_user_id) 
+            const queryLog = `INSERT INTO stock_logs (log_status, quantity_changed, quantity_after, fk_component_id, fk_user_id) 
             VALUES (?, ?, ?, ?, ?)`;
             const logValues = ["in", quantity, newQuantity, componentId, userId];
             await connection.execute(queryLog, logValues);
@@ -47,7 +47,7 @@ module.exports = class StockService {
         try {
             await connection.beginTransaction();
 
-            const queryCheck = `SELECT quantity FROM component WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
+            const queryCheck = `SELECT quantity FROM components WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
             const [rows] = await connection.execute(queryCheck, [componentId, userId]);
 
             if (rows.length === 0) {
@@ -62,11 +62,11 @@ module.exports = class StockService {
 
             const newQuantity = Number(currentQuantity) - Number(quantity)
 
-            const queryExit = `UPDATE component SET quantity = ? WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
+            const queryExit = `UPDATE components SET quantity = ? WHERE is_active = 1 AND component_id = ? AND fk_user_id = ?`;
             const exitValues = [newQuantity, componentId, userId];
             await connection.execute(queryExit, exitValues);
 
-            const queryLog = `INSERT INTO stock_log (log_status, quantity_changed, quantity_after, fk_component_id, fk_user_id) 
+            const queryLog = `INSERT INTO stock_logs (log_status, quantity_changed, quantity_after, fk_component_id, fk_user_id) 
             VALUES (?, ?, ?, ?, ?)`;
             const logValues = ["out", quantity, newQuantity, componentId, userId];
             await connection.execute(queryLog, logValues);
@@ -90,14 +90,14 @@ module.exports = class StockService {
         sl.log_status,
         sl.quantity_changed,
         sl.quantity_after,
-        sl.data_log,
+        sl.updated_at,
         c.component_name,
         u.user_name
-        FROM stock_log sl
-        JOIN component c ON sl.fk_component_id = c.component_id
+        FROM stock_logs sl
+        JOIN components c ON sl.fk_component_id = c.component_id
         JOIN users u ON sl.fk_user_id = u.user_id
         WHERE sl.fk_user_id = ?
-        ORDER BY sl.data_log DESC`;
+        ORDER BY sl.updated_at DESC`;
 
         try {
             const [log] = await connect.execute(query, [userId]);
@@ -114,15 +114,15 @@ module.exports = class StockService {
         sl.log_status,
         sl.quantity_changed,
         sl.quantity_after,
-        sl.data_log,
+        sl.updated_at,
         c.component_name,
         u.user_name
-        FROM stock_log sl
-        JOIN component c ON sl.fk_component_id = c.component_id
+        FROM stock_logs sl
+        JOIN components c ON sl.fk_component_id = c.component_id
         JOIN users u ON sl.fk_user_id = u.user_id
         WHERE sl.fk_component_id = ?
         AND sl.fk_user_id = ?
-        ORDER BY sl.data_log DESC`;
+        ORDER BY sl.updated_at DESC`;
 
         const values = [componentId, userId];
 

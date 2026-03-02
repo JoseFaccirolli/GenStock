@@ -2,7 +2,8 @@ const ComponentService = require("../service/componentService");
 
 module.exports = class ComponentController {
     static async createComponent(req, res) {
-        const { componentName, quantity, description, userId } = req.body;
+        const userId = req.user.id;
+        const { componentName, quantity, description } = req.body;
 
         if (!componentName || quantity === undefined || !userId) {
             return res.status(400).json({
@@ -32,14 +33,7 @@ module.exports = class ComponentController {
     }
 
     static async readAllComponents(req, res) {
-        const userId = req.userId;
-
-        if (!userId || userId.length !== 36) {
-            return res.status(400).json({
-                error: true,
-                message: "Invalid User ID format."
-            });
-        }
+        const userId = req.user.id;
 
         try {
             const components = await ComponentService.readAllComponents(userId);
@@ -57,7 +51,7 @@ module.exports = class ComponentController {
     }
 
     static async updateComponent(req, res) {
-        const userId = req.userId;
+        const userId = req.user.id;
         const { componentId } = req.params;
         const { componentName, description} = req.body;
 
@@ -65,13 +59,6 @@ module.exports = class ComponentController {
             return res.status(400).json({
                 error: true,
                 message: "No fields provided for update."
-            });
-        }
-
-        if (!userId || userId.length !== 36) {
-            return res.status(400).json({
-                error: true,
-                message: "Invalid User ID format."
             });
         }
 
@@ -91,19 +78,12 @@ module.exports = class ComponentController {
 
     static async deleteComponent(req, res) {
         const { componentId } = req.params;
-        const userId = req.userId;
+        const userId = req.user.id;
 
         if (!componentId || isNaN(componentId)) {
             return res.status(400).json({
                 error: true,
                 message: "Invalid Component ID."
-            });
-        }
-
-        if (!userId || userId.length !== 36) {
-            return res.status(400).json({
-                error: true,
-                message: "Invalid User ID format."
             });
         }
 

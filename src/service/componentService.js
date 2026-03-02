@@ -2,7 +2,7 @@ const connect = require("../database/connect");
 
 module.exports = class ComponentService {
     static async createComponent(componentName, quantity, description, userId) {
-        const verifyQuery = `SELECT component_id, is_active FROM component WHERE component_name = ? AND fk_user_id = ?`;
+        const verifyQuery = `SELECT component_id, is_active FROM components WHERE component_name = ? AND fk_user_id = ?`;
         const verifyValues = [componentName, userId];
         try {
             const [rows] = await connect.execute(verifyQuery, verifyValues);
@@ -17,13 +17,14 @@ module.exports = class ComponentService {
                 const [result] = await connect.execute(activationQuery, activationValues);
                 return result;
             }
-            const createQuery = `INSERT INTO component (component_name, quantity, description, fk_user_id)
+            const createQuery = `INSERT INTO components (component_name, quantity, description, fk_user_id)
     VALUES (?, ?, ?, ?)`;
             const createValues = [componentName, quantity, description, userId];
 
             const [result] = await connect.execute(createQuery, createValues);
             return result;
         } catch (error) {
+            console.log(error)
             if (error.status) throw error;
             if (error.code === "ER_NO_REFERENCED_ROW_2"){
                throw { status: 404, message: "User not found." }
@@ -40,7 +41,7 @@ module.exports = class ComponentService {
             c.quantity, 
             c.description, 
             u.user_name as userName
-        FROM component c 
+        FROM components c 
         JOIN users u ON c.fk_user_id = u.user_id
         WHERE c.fk_user_id = ? AND c.is_active = 1
         `;
@@ -79,7 +80,7 @@ module.exports = class ComponentService {
 
         values.push(componentId);
         values.push(userId);
-        const query = `UPDATE component SET ${updates.join(", ")} WHERE component_id = ? AND fk_user_id = ? AND is_active = 1`;
+        const query = `UPDATE components SET ${updates.join(", ")} WHERE component_id = ? AND fk_user_id = ? AND is_active = 1`;
 
         try {
             const [result] = await connect.execute(query, values);
@@ -102,7 +103,7 @@ module.exports = class ComponentService {
         try {
             await connection.beginTransaction();
 
-            const selectQuery = `SELECT * FROM component WHERE component_id = ? AND fk_user_id = ? AND is_active = 1`;
+            const selectQuery = `SELECT * FROM components WHERE component_id = ? AND fk_user_id = ? AND is_active = 1`;
             const selectValues = [componentId, userId];
 
             const [rows] = await connection.execute(selectQuery, selectValues);
@@ -111,11 +112,11 @@ module.exports = class ComponentService {
             }
             const remaining = rows[0].quantity;
 
-            const deleteQuery = `UPDATE component SET is_active = 0, quantity = 0 WHERE component_id = ? AND fk_user_id = ?`;
+            const deleteQuery = `UPDATE components SET is_active = 0, quantity = 0 WHERE component_id = ? AND fk_user_id = ?`;
             const deleteValues = [componentId, userId];
             await connection.execute(deleteQuery, deleteValues);
 
-            const logQuery = `INSERT INTO stock_log (log_status, quantity_changed, quantity_after, fk_component_id, fk_user_id) 
+            const logQuery = `INSERT INTO stock_logs (log_status, quantity_changed, quantity_after, fk_component_id, fk_user_id) 
             VALUES (?, ?, ?, ?, ?)`;
             const logValues = ["deleted", remaining, 0, componentId, userId];
             await connection.execute(logQuery, logValues);

@@ -2,19 +2,13 @@ const StockService = require("../service/stockService");
 
 module.exports = class StockController {
     static async entry(req, res) {
-        const userId = req.userId;
+        const userId = req.user.id;
         const { componentId, quantity} = req.body;
 
         if (!componentId || !quantity) {
             return res.status(400).json({
                 error: true,
                 message: "Missing required fields."
-            });
-        }
-        if (!userId || userId.length !== 36) {
-            return res.status(400).json({
-                error: true,
-                message: "Invalid User ID format."
             });
         }
         if (isNaN(quantity) || quantity <= 0) {
@@ -39,19 +33,13 @@ module.exports = class StockController {
     }
 
     static async exit(req, res) {
-        const userId = req.userId;
+        const userId = req.user.id;
         const { componentId, quantity } = req.body;
 
         if (!componentId || !quantity) {
             return res.status(400).json({
                 error: true,
                 message: "Missing required fields."
-            });
-        }
-        if (!userId || userId.length !== 36) {
-            return res.status(400).json({
-                error: true,
-                message: "Invalid User ID format."
             });
         }
         if (isNaN(quantity) || quantity <= 0) {
@@ -76,14 +64,7 @@ module.exports = class StockController {
     }
 
     static async readAllLogs(req, res) {
-        const userId = req.userId;
-
-        if (!userId || userId.length !== 36) {
-            return res.status(400).json({
-                error: true,
-                message: "Invalid User ID format."
-            });
-        }
+        const userId = req.user.id;
 
         try {
             const log = await StockService.readAllLogs(userId);
@@ -102,14 +83,7 @@ module.exports = class StockController {
 
     static async readLogById(req, res) {
         const { componentId } = req.params;
-        const userId = req.userId;
-
-        if (!userId || userId.length !== 36) {
-            return res.status(400).json({
-                error: true,
-                message: "Invalid User ID format."
-            });
-        }
+        const userId = req.user.id;
 
         try {
             const log = await StockService.readLogById(componentId, userId);
