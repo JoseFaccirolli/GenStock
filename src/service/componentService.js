@@ -11,7 +11,7 @@ module.exports = class ComponentService {
             }
             if (rows.length > 0 && !rows[0].is_active) {
                 const componentId = rows[0].component_id;
-                const activationQuery = `UPDATE component SET is_active = 1, quantity = ?, description = ? WHERE component_id = ? AND fk_user_id = ?`;
+                const activationQuery = `UPDATE components SET is_active = 1, quantity = ?, description = ? WHERE component_id = ? AND fk_user_id = ?`;
                 const activationValues = [quantity, description, componentId, userId];
 
                 const [result] = await connect.execute(activationQuery, activationValues);
