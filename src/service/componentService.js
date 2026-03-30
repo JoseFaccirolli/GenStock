@@ -2,6 +2,9 @@ const connect = require("../database/connect");
 
 module.exports = class ComponentService {
     static async createComponent(componentName, quantity, description, userId) {
+        if (!description){
+            description = "No description."
+        }
         const verifyQuery = `SELECT component_id, is_active FROM components WHERE component_name = ? AND fk_user_id = ?`;
         const verifyValues = [componentName, userId];
         try {
@@ -68,6 +71,9 @@ module.exports = class ComponentService {
             values.push(componentName);
         }
 
+        if (description === "") {
+            description = "No description."
+        }
         if (description !== undefined) {
             updates.push("description = ?");
             values.push(description);
