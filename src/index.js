@@ -1,4 +1,5 @@
 const express = require("express");
+require("dotenv-safe").config();
 const testConnect = require("./database/testConnect");
 const cors = require("cors");
 
